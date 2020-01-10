@@ -1,6 +1,6 @@
 #include "App.h"
 #include "Button.h"
-#include "raylib/raylib.h"
+
 enum GAME_STATE{
 	MENU,
 	APPLICATIONS,
@@ -9,7 +9,7 @@ enum GAME_STATE{
 };
 void App_init(App* self){
 	SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-	InitWindow(self->width, self->height, self->name);
+	InitWindow(self->windowSize.x, self->windowSize.y, self->name);
 	SetTargetFPS(60);
 }
 void App_run(App* self){

@@ -6,8 +6,8 @@
 int main(){
 	App app;
 	app.name = "RayING";
-	app.width = 800;
-	app.height = 800;
+	app.windowSize.x = 800;
+	app.windowSize.y = 800;
 	App_init(&app);
 	App_run(&app);
 }

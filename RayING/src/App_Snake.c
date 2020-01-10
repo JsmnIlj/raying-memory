@@ -2,15 +2,103 @@
 #include "raylib/raylib.h"
 #define SNAKE_LENGTH   256
 #define SQUARE_SIZE     31
-typedef struct Snake{
+
+typedef struct Box{
+	Rectangle edges;
+} Box;
+void Box_init(Box* self, int x, int y, int width, int height);
+void Box_drawGrid(Box* self);
+
+typedef struct Food{
 	Vector2 position;
-	Vector2 speed;
 	Vector2 size;
 	Color color;
+	bool isEaten;
+} Food;
+void Food_init(Food* self);
+void Food_draw(Food* self);
+void Food_init(Food* self){
+	self->position = (Vector2){ 0,0 };
+	self->size = (Vector2){ SQUARE_SIZE, SQUARE_SIZE };
+	self->color = SKYBLUE;
+	self->isEaten = true;
+}
+void Food_draw(Food* self){
+	DrawRectangleV(self->position, self->size, self->color);
+}
+void Food_calculatePosition(Food* self, Vector2* winSize){
+	if(self->isEaten){
+		self->isEaten = false;
+		self->position = (Vector2){
+			GetRandomValue(0, (winSize->x / SQUARE_SIZE) - 1) * SQUARE_SIZE + 0,
+			GetRandomValue(0, (winSize->y / SQUARE_SIZE) - 1) * SQUARE_SIZE + 0
+		};
+	}
+}
+
+typedef struct Snake{
+	Vector2 position;
+	Vector2 size;
+	Vector2 speed;
+	Color color;
+	Vector2 tail[SNAKE_LENGTH];
+	int tailCount;
 
 } Snake;
+void Snake_init(Snake* self);
+void Snake_draw(Snake* self);
+void Snake_move(Snake* self);
+void Snake_control(Snake* self);
+bool Snake_detectWall(Snake* self, Box* wall);
+bool Snake_detectFood(Snake* self, Food* food);
+
+enum GAME_STATE{
+	PLAY,
+	PAUSE,
+	GAMEOVER,
+	QUIT
+};
+typedef struct SnakeGame{
+	int running;
+	enum GAME_STATE gameState;
+	App* appPtr;
+
+	Snake snake;
+	Food food;
+	//Rectangle wall;
+	Box wall;
+} SnakeGame;
+void SnakeGame_init(SnakeGame* self);
+void SnakeGame_update(SnakeGame* self);
+void SnakeGame_draw(SnakeGame* self);
+void SnakeGame_updateDrawFrame(SnakeGame* self);
+
+
+//
+// IMPLEMENTATION
+//
+
+
+void Box_init(Box* self, int x, int y, int width, int height){
+	self->edges.x = 0;
+	self->edges.y = 0;
+	self->edges.width = width;
+	self->edges.height = height;
+}
+void Box_drawGrid(Box* self){
+	// Draw grid lines
+	for(int i = 0; i < self->edges.width / SQUARE_SIZE + 1; i++){
+		DrawLineV((Vector2){ SQUARE_SIZE* i + 0, 0 }, (Vector2){ SQUARE_SIZE* i + 0, self->edges.height - 0 }, LIGHTGRAY);
+	}
+
+	for(int i = 0; i < self->edges.height / SQUARE_SIZE + 1; i++){
+		DrawLineV((Vector2){ 0, SQUARE_SIZE* i + 0 }, (Vector2){ self->edges.width - 0, SQUARE_SIZE* i + 0 }, LIGHTGRAY);
+	}
+}
+
+
 void Snake_init(Snake* self){
-	SetTargetFPS(5);
+	SetTargetFPS(10);
 	self->position = (Vector2){ 0, 0 };
 	self->size = (Vector2){ SQUARE_SIZE, SQUARE_SIZE };
 	self->speed = (Vector2){ SQUARE_SIZE, 0 };
@@ -26,48 +114,87 @@ void Snake_move(Snake* self){
 void Snake_control(Snake* self){
 	float step = SQUARE_SIZE;
 
-	if(IsKeyPressed(KEY_RIGHT)){
-		self->speed.x = +SQUARE_SIZE;
+	if(IsKeyPressed(KEY_RIGHT) && self->speed.x == 0){
+		self->speed.x = +step;
 		self->speed.y = 0;
 	}
-	if(IsKeyPressed(KEY_LEFT)){
-		self->speed.x = -SQUARE_SIZE;
+	if(IsKeyPressed(KEY_LEFT) && self->speed.x == 0){
+		self->speed.x = -step;
 		self->speed.y = 0;
 	}
-	if(IsKeyPressed(KEY_UP)){
+	if(IsKeyPressed(KEY_UP) && self->speed.y == 0){
 		self->speed.x = 0;
-		self->speed.y = -SQUARE_SIZE;
+		self->speed.y = -step;
 	}
-	if(IsKeyPressed(KEY_DOWN)){
+	if(IsKeyPressed(KEY_DOWN) && self->speed.y == 0){
 		self->speed.x = 0;
-		self->speed.y = +SQUARE_SIZE;
+		self->speed.y = +step;
+	}
+}
+bool Snake_detectWall(Snake* self, Box* wall){
+	if(!CheckCollisionPointRec(self->position, wall->edges)){
+		return true;
+	} else{
+		return false;
+	}
+}
+bool Snake_detectFood(Snake* self, Food* food){
+	if((self->position.x < (food->position.x + food->size.x) &&
+	   (self->position.x + self->size.x) > food->position.x) &&
+	   (self->position.y < (food->position.y + food->size.y) &&
+	   (self->position.y + self->size.y) > food->position.y)){
+		food->isEaten = true;
 	}
 }
 
-enum GAME_STATE{
-	PLAY,
-	PAUSE,
-	GAMEOVER
-};
-typedef struct SnakeGame{
-	int running;
-	enum GAME_STATE gameState;
 
-	Snake snake;
-} SnakeGame;
 void SnakeGame_init(SnakeGame* self){
+	self->gameState = PLAY;
+	Box_init(&self->wall, 0, 0, self->appPtr->windowSize.x, self->appPtr->windowSize.y);
+	Food_init(&self->food);
 	Snake_init(&self->snake);
+	self->wall.edges = (Rectangle){ 0, 0, self->appPtr->windowSize.x, self->appPtr->windowSize.y };
 }
-
 void SnakeGame_update(SnakeGame* self){
-	Snake_control(&self->snake);
-	Snake_move(&self->snake);
+	if(!(self->gameState == GAMEOVER)){
+
+		if(IsKeyPressed(KEY_SPACE)){
+			if(self->gameState == PLAY){
+				self->gameState = PAUSE;
+			} else{
+				self->gameState = PLAY;
+			}
+		}
+		if(!(self->gameState == PAUSE)){
+			Snake_control(&self->snake);
+			Snake_move(&self->snake);
+			if(Snake_detectWall(&self->snake, &self->wall)){
+				self->gameState = GAMEOVER;
+			}
+			Food_calculatePosition(&self->food, &self->appPtr->windowSize);
+			Snake_detectFood(&self->snake, &self->food);
+		} else if(self->gameState == PAUSE){
+
+		}
+	} else if(self->gameState == GAMEOVER){
+		SnakeGame_init(self);
+		if(self->gameState == QUIT){
+			self->running = false;
+		}
+	}
 }
 void SnakeGame_draw(SnakeGame* self){
 	BeginDrawing();
 	ClearBackground(RAYWHITE);
+	Box_drawGrid(&self->wall);
+	Food_draw(&self->food);
 	Snake_draw(&self->snake);
-
+	if(self->gameState == PAUSE){
+		DrawText("GAME PAUSED", self->appPtr->windowSize.x / 2 - MeasureText("GAME PAUSED", 40) / 2, self->appPtr->windowSize.y / 2 - 40, 40, GRAY);
+	}
+	if(self->gameState == GAMEOVER){
+		DrawText("GAME OVER", self->appPtr->windowSize.x / 2 - MeasureText("GAME OVER", 40) / 2, self->appPtr->windowSize.y / 2 - 40, 40, GRAY);
+	}
 	EndDrawing();
 }
 void SnakeGame_updateDrawFrame(SnakeGame* self){
@@ -79,6 +206,7 @@ void SnakeGame_updateDrawFrame(SnakeGame* self){
 
 void initSnakeGame(App* self){
 	SnakeGame snakeGame;
+	snakeGame.appPtr = self;
 	SnakeGame_init(&snakeGame);
 	while(snakeGame.running && !WindowShouldClose()){
 		SnakeGame_updateDrawFrame(&snakeGame);
@@ -232,8 +360,12 @@ void initSnakeGame(App* self){
 //		};
 //
 //		for(int i = 0; i < self->counterTail; i++){
-//			while((self->food.position.x == self->snake[i].position.x) && (self->food.position.y == self->snake[i].position.y)){
-//				self->food.position = (Vector2){ GetRandomValue(0, (self->screenWidth / SQUARE_SIZE) - 1) * SQUARE_SIZE + self->offset.x / 2, GetRandomValue(0, (self->screenHeight / SQUARE_SIZE) - 1) * SQUARE_SIZE + self->offset.y / 2 };
+//			while((self->food.position.x == self->snake[i].position.x) && 
+//				  (self->food.position.y == self->snake[i].position.y)){
+//				self->food.position = (Vector2){ 
+//					GetRandomValue(0, (self->screenWidth / SQUARE_SIZE) - 1) * SQUARE_SIZE + self->offset.x / 2, 
+//					GetRandomValue(0, (self->screenHeight / SQUARE_SIZE) - 1) * SQUARE_SIZE + self->offset.y / 2 
+//				};
 //				i = 0;
 //			}
 //		}
