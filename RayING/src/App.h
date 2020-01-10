@@ -1,15 +1,12 @@
 #pragma once
-enum GAME_STATE{
-	MENU,
-	APPLICATIONS,
-	OPTIONS,
-	QUIT
-};
+enum GAME_STATE;
 typedef struct App{
 	char* name;
 	int width;
 	int height;
+
 	enum GAME_STATE gameState;
+
 } App;
 void App_init(App* self);
 void App_run(App* self);

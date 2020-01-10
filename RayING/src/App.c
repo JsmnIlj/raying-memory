@@ -1,6 +1,12 @@
 #include "App.h"
 #include "Button.h"
 #include "raylib/raylib.h"
+enum GAME_STATE{
+	MENU,
+	APPLICATIONS,
+	OPTIONS,
+	QUIT
+};
 void App_init(App* self){
 	SetConfigFlags(FLAG_WINDOW_RESIZABLE);
 	InitWindow(self->width, self->height, self->name);
