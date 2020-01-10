@@ -7,14 +7,14 @@ void App_init(App* self){
 	SetTargetFPS(60);
 }
 void App_run(App* self){
-	enum GAME_STATE gameState = MENU;
+	self->gameState = MENU;
 	int running = 1;
 	while(running && !WindowShouldClose()){
 
-		switch(gameState){
-		case MENU:			menuState(&gameState); break;
-		case APPLICATIONS:	applicationSelectionState(&gameState); break;
-		case OPTIONS:		optionsState(&gameState); break;
+		switch(self->gameState){
+		case MENU:			menuState(self); break;
+		case APPLICATIONS:	applicationSelectionState(self); break;
+		case OPTIONS:		optionsState(self); break;
 		case QUIT:			running = 0; break;
 		}
 
@@ -22,7 +22,7 @@ void App_run(App* self){
 	CloseWindow();
 	return 0;
 }
-void menuState(enum GAME_STATE* gameState){
+void menuState(App* self){
 	BeginDrawing();
 	ClearBackground(RAYWHITE);
 	int fontSize = 60;
@@ -45,21 +45,21 @@ void menuState(enum GAME_STATE* gameState){
 	Vector2 mousepoint = GetMousePosition();
 	if(CheckCollisionPointRec(mousepoint, applicationsButton.rec)){
 		if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-			*gameState = APPLICATIONS;
+			self->gameState = APPLICATIONS;
 		}
 	}
 	if(CheckCollisionPointRec(mousepoint, optionsButton.rec)){
 		if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-			*gameState = OPTIONS;
+			self->gameState = OPTIONS;
 		}
 	}
 	if(CheckCollisionPointRec(mousepoint, quitButton.rec)){
 		if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-			*gameState = QUIT;
+			self->gameState = QUIT;
 		}
 	}
 }
-void applicationSelectionState(enum GAME_STATE* gameState){
+void applicationSelectionState(App* self){
 	BeginDrawing();
 	ClearBackground(RAYWHITE);
 
@@ -86,11 +86,17 @@ void applicationSelectionState(enum GAME_STATE* gameState){
 	Vector2 mousepoint = GetMousePosition();
 	if(CheckCollisionPointRec(mousepoint, backButton.rec)){
 		if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-			*gameState = MENU;
+			self->gameState = MENU;
+		}
+	}
+
+	if(CheckCollisionPointRec(mousepoint, snakeButton.rec)){
+		if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+			initSnakeGame(self);
 		}
 	}
 }
-void optionsState(enum GAME_STATE* gameState){
+void optionsState(App* self){
 	BeginDrawing();
 	ClearBackground(RAYWHITE);
 
@@ -106,7 +112,7 @@ void optionsState(enum GAME_STATE* gameState){
 	Vector2 mousepoint = GetMousePosition();
 	if(CheckCollisionPointRec(mousepoint, backButton.rec)){
 		if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-			*gameState = MENU;
+			self->gameState = MENU;
 		}
 	}
 }
