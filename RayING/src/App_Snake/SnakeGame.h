@@ -17,6 +17,7 @@ typedef struct SnakeGame{
 	int running;
 	enum GAME_STATE gameState;
 	App* appPtr;
+	Vector2 windowSize;
 
 	Snake snake;
 	Food food;

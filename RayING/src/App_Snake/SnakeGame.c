@@ -1,37 +1,12 @@
 #include "SnakeGame.h"
-void Menu_drawGameoverMenu(SnakeGame* self){
-	int textPosX = self->appPtr->windowSize.x / 2 - MeasureText("GAME OVER", 40) / 2;
-	int textPosY = self->appPtr->windowSize.y / 2 - 40;
+#include "Menu.h"
 
-	DrawText("GAME OVER", textPosX, textPosY, 40, GRAY);
-	int fontSize = 40;
-
-	Button repeatButton = { "Repeat", fontSize, {textPosX - 150, textPosX + 200, 1, 1} };
-	Button_drawRec(&repeatButton);
-
-	Button quitButton = { "Quit", fontSize, {textPosX + 150, textPosX + 200, 1, 1} };
-	Button_drawRec(&quitButton);
-
-	Vector2 mousepoint = GetMousePosition();
-	if(CheckCollisionPointRec(mousepoint, repeatButton.rec)){
-		if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-			SnakeGame_init(self);
-		}
-	}
-	if(CheckCollisionPointRec(mousepoint, quitButton.rec)){
-		if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-			self->gameState = QUIT;
-		}
-	}
-}
-void Menu_drawOptionsMenu(SnakeGame* self){
-	DrawText("GAME PAUSED", self->appPtr->windowSize.x / 2 - MeasureText("GAME PAUSED", 40) / 2, self->appPtr->windowSize.y / 2 - 40, 40, GRAY);
-
-}
 void SnakeGame_init(SnakeGame* self){
 	self->gameState = PLAY;
 	self->framesCounter = 0;
 
+	self->windowSize = self->appPtr->windowSize;
+	SQUARE_SIZE = 40;
 	SNAKE_HEAD_COLOR = DARKBLUE;
 	SNAKE_TAIL_COLOR = VIOLET;
 	FOOD_COLOR = SKYBLUE;
@@ -80,10 +55,15 @@ void SnakeGame_update(SnakeGame* self){
 	}
 }
 void SnakeGame_draw(SnakeGame* self){
-	BeginDrawing();
+
 	ClearBackground(RAYWHITE);
-	DrawText(FormatText("Count: %i", self->snake.segmentCount), 280, 130, 40, MAROON);
-	Board_drawGrid(&self->wall);
+
+	int fontSize = self->windowSize.x /22;
+
+	DrawText("SNAKE", self->windowSize.x / 2 - MeasureText("SNAKE", fontSize)/2, self->windowSize.y/ 2 / 2 / 2, fontSize, MAROON);
+
+	DrawText(FormatText("Count: %i", self->snake.segmentCount), 280, 130, fontSize/2, MAROON);
+	Board_drawGrid(&self->wall, self->windowSize);
 	Food_draw(&self->food, &self->wall);
 	Snake_draw(&self->snake, &self->wall);
 	if(self->gameState == PAUSE){
