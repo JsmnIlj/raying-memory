@@ -1,4 +1,4 @@
 #pragma once
-#include "App.h"
+#include "../App.h"
 
 void initSnakeGame(App* self);
