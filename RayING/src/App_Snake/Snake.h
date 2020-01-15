@@ -17,3 +17,4 @@ void Snake_move(Snake* self, const int framesCounter);
 void Snake_control(Snake* self);
 bool Snake_isOutsideWall(Snake* self, Board* wall);
 bool Snake_detectFood(Snake* self, Food* food);
+bool Snake_detectSelf(Snake* self, Board* wall);

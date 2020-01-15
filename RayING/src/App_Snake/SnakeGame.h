@@ -4,6 +4,7 @@
 #include "Board.h"
 #include "Snake.h"
 #include "Food.h"
+#include <time.h>
 
 enum GAME_STATE{
 	PLAY,
@@ -23,6 +24,7 @@ typedef struct SnakeGame{
 	Food food;
 	Board wall;
 	int framesCounter;
+	clock_t startTime;
 } SnakeGame;
 void SnakeGame_init(SnakeGame* self);
 void SnakeGame_update(SnakeGame* self);
