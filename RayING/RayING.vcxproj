@@ -142,6 +142,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\App.c" />
+    <ClCompile Include="src\App_Memory\App_Memory.c" />
     <ClCompile Include="src\App_Snake\App_Snake.c" />
     <ClCompile Include="src\App_Snake\Board.c" />
     <ClCompile Include="src\App_Snake\Food.c" />
@@ -156,6 +157,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\App.h" />
+    <ClInclude Include="src\App_Memory\App_Memory.h" />
     <ClInclude Include="src\App_Snake\App_Snake.h" />
     <ClInclude Include="src\App_Snake\Board.h" />
     <ClInclude Include="src\App_Snake\Food.h" />

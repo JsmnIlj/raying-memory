@@ -96,11 +96,18 @@ void applicationSelectionState(App* self){
 		}
 	}
 
-	if(CheckCollisionPointRec(mousepoint, snakeButton.rec)){
-		if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+	if (CheckCollisionPointRec(mousepoint, snakeButton.rec)) {
+		if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
 			initSnakeGame(self);
 		}
 	}
+
+	if (CheckCollisionPointRec(mousepoint, memoryButton.rec)) {
+		if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+			initMemoryGame(self);
+		}
+	}
+
 }
 void optionsState(App* self){
 	BeginDrawing();
