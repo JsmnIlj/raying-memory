@@ -28,5 +28,4 @@ void Menu_drawGameoverMenu(SnakeGame* self){
 }
 void Menu_drawOptionsMenu(SnakeGame* self){
 	DrawText("GAME PAUSED", self->appPtr->windowSize.x / 2 - MeasureText("GAME PAUSED", 40) / 2, self->appPtr->windowSize.y / 2 - 40, 40, GRAY);
-
 }
