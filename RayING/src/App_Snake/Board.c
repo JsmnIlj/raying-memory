@@ -3,8 +3,8 @@
 
 void Board_init(Board* self, int numCol, int numRow, int x, int y){
 
-	self->numCol = 15;
-	self->numRow = 15;
+	self->numCol = numCol;
+	self->numRow = numRow;
 
 
 
@@ -13,15 +13,8 @@ void Board_init(Board* self, int numCol, int numRow, int x, int y){
 
 	self->position.x = GetMonitorWidth(0) / 2 - self->numCol * SQUARE_SIZE / 2;
 	self->position.y = GetMonitorHeight(0) / 2 - self->numRow * SQUARE_SIZE / 2;
-
-	self->target = LoadRenderTexture(GetMonitorWidth(0), GetMonitorHeight(0));
-
-
 }
 void Board_drawGrid(Board* self, Vector2 windowSize){
-
-
-
 	self->position.x = windowSize.x/ 2 - self->numCol * SQUARE_SIZE / 2;
 	self->position.y = windowSize.y/ 2 - self->numRow * SQUARE_SIZE / 2;
 	//up-down

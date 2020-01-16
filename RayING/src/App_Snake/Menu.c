@@ -2,16 +2,17 @@
 #include "../Button.h"
 #include "SnakeGame.h"
 void Menu_drawGameoverMenu(SnakeGame* self){
-	int textPosX = self->appPtr->windowSize.x / 2 - MeasureText("GAME OVER", 40) / 2;
-	int textPosY = self->appPtr->windowSize.y / 2 - 40;
-
-	DrawText("GAME OVER", textPosX, textPosY, 40, GRAY);
 	int fontSize = 40;
+	int textPosX = self->windowSize.x / 2;
+	int textPosY = self->windowSize.y / 2;
 
-	Button repeatButton = { "Repeat", fontSize, {textPosX - 150, textPosX + 200, 1, 1} };
+	DrawText("GAME OVER", textPosX, textPosY, fontSize, GRAY);
+
+
+	Button repeatButton = { "Repeat", fontSize, {textPosX - 100, (self->wall.position.y + self->wall.numRow * SQUARE_SIZE), 1, 1} };
 	Button_drawRec(&repeatButton);
 
-	Button quitButton = { "Quit", fontSize, {textPosX + 150, textPosX + 200, 1, 1} };
+	Button quitButton = { "Quit", fontSize, {textPosX + 100, (self->wall.position.y + self->wall.numRow * SQUARE_SIZE), 1, 1} };
 	Button_drawRec(&quitButton);
 
 	Vector2 mousepoint = GetMousePosition();
@@ -27,5 +28,6 @@ void Menu_drawGameoverMenu(SnakeGame* self){
 	}
 }
 void Menu_drawOptionsMenu(SnakeGame* self){
+	DrawText("OPTIONS", self->windowSize.x / 10 * 1, self->windowSize.y / 10 * 1, 50, MAROON);
 	DrawText("GAME PAUSED", self->appPtr->windowSize.x / 2 - MeasureText("GAME PAUSED", 40) / 2, self->appPtr->windowSize.y / 2 - 40, 40, GRAY);
 }

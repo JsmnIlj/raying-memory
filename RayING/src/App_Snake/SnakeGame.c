@@ -2,11 +2,13 @@
 #include "Menu.h"
 
 void SnakeGame_init(SnakeGame* self){
-	self->gameState = PLAY;
+	self->gameState		= PLAY;
 	self->framesCounter = 0;
+
 
 	self->windowSize = self->appPtr->windowSize;
 	SQUARE_SIZE = 40;
+	SQUARE_SIZE = self->windowSize.y/20;
 	SNAKE_HEAD_COLOR = DARKBLUE;
 	SNAKE_TAIL_COLOR = VIOLET;
 	FOOD_COLOR = SKYBLUE;
@@ -35,14 +37,11 @@ void SnakeGame_update(SnakeGame* self){
 
 				Snake_control(&self->snake);
 				Snake_move(&self->snake, self->framesCounter++);
-				if(Snake_isOutsideWall(&self->snake, &self->wall)){
-					self->gameState = GAMEOVER;
-				}
-				if(Snake_detectSelf(&self->snake, &self->wall)){
-					self->gameState = GAMEOVER;
-				}
-				Food_calculatePosition(&self->food, &self->wall, &self->snake);
+				if(Snake_isOutsideWall(&self->snake, &self->wall)) self->gameState = GAMEOVER;
+				if(Snake_detectSelf(&self->snake, &self->wall)) self->gameState = GAMEOVER;
 				Snake_detectFood(&self->snake, &self->food);
+
+				Food_calculatePosition(&self->food, &self->wall, &self->snake);
 
 			} else if(self->gameState == PAUSE){
 
@@ -54,15 +53,23 @@ void SnakeGame_update(SnakeGame* self){
 		self->running = false;
 	}
 }
+SnakeGame_drawUI(SnakeGame* self){
+	int fontSize = self->windowSize.y / 22;
+	fontSize = self->windowSize.y / 10;
+	char* snakeText = "SNAKE";
+	int snakeTextPosX = self->windowSize.x / 2 - MeasureText(snakeText, fontSize) / 2;
+	int snakeTextPoxY = self->windowSize.y / 50;
+	DrawText("SNAKE", snakeTextPosX, snakeTextPoxY, fontSize, MAROON);
+
+	int countTextPosX = self->windowSize.x / 4 * 3;
+	int countTextPosY = self->windowSize.y / 50 * 1 + fontSize / 2;
+	DrawText(FormatText("Count: %i", self->snake.segmentCount), countTextPosX, countTextPosY, fontSize / 2, MAROON);
+}
 void SnakeGame_draw(SnakeGame* self){
 
 	ClearBackground(RAYWHITE);
 
-	int fontSize = self->windowSize.x /22;
-
-	DrawText("SNAKE", self->windowSize.x / 2 - MeasureText("SNAKE", fontSize)/2, self->windowSize.y/ 2 / 2 / 2, fontSize, MAROON);
-
-	DrawText(FormatText("Count: %i", self->snake.segmentCount), 280, 130, fontSize/2, MAROON);
+	SnakeGame_drawUI(self);
 	Board_drawGrid(&self->wall, self->windowSize);
 	Food_draw(&self->food, &self->wall);
 	Snake_draw(&self->snake, &self->wall);

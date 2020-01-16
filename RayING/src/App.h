@@ -4,8 +4,6 @@ enum GAME_STATE;
 typedef struct App{
 	char* name;
 	Vector2 windowSize;
-	//int width;
-	//int height;
 
 	enum GAME_STATE gameState;
 

@@ -48,7 +48,7 @@ void menuState(App* self){
 
 	EndDrawing();
 
-	Vector2 mousepoint = GetMousePosition();
+	Vector2 mousepoint = GetMousePosition(); ;
 	if(CheckCollisionPointRec(mousepoint, applicationsButton.rec)){
 		if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
 			self->gameState = APPLICATIONS;
@@ -96,14 +96,14 @@ void applicationSelectionState(App* self){
 		}
 	}
 
-	if (CheckCollisionPointRec(mousepoint, snakeButton.rec)) {
-		if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+	if(CheckCollisionPointRec(mousepoint, snakeButton.rec)){
+		if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
 			initSnakeGame(self);
 		}
 	}
 
-	if (CheckCollisionPointRec(mousepoint, memoryButton.rec)) {
-		if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+	if(CheckCollisionPointRec(mousepoint, memoryButton.rec)){
+		if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
 			initMemoryGame(self);
 		}
 	}
