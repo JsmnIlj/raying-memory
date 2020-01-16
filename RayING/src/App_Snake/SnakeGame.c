@@ -5,6 +5,7 @@ void SnakeGame_init(SnakeGame* self){
 	self->gameState		= PLAY;
 	self->framesCounter = 0;
 
+
 	self->windowSize = self->appPtr->windowSize;
 	SQUARE_SIZE = 40;
 	SQUARE_SIZE = self->windowSize.y/20;
