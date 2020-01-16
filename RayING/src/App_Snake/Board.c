@@ -3,8 +3,8 @@
 
 void Board_init(Board* self, int numCol, int numRow, int x, int y){
 
-	self->numCol = 15;
-	self->numRow = 15;
+	self->numCol = numCol;
+	self->numRow = numRow;
 
 
 

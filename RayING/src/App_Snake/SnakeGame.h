@@ -25,6 +25,8 @@ typedef struct SnakeGame{
 	Board wall;
 	int framesCounter;
 	clock_t startTime;
+	clock_t elapsedTime;
+	clock_t pausedTime;
 } SnakeGame;
 void SnakeGame_init(SnakeGame* self);
 void SnakeGame_update(SnakeGame* self);

@@ -9,10 +9,10 @@ void Menu_drawGameoverMenu(SnakeGame* self){
 	DrawText("GAME OVER", textPosX, textPosY, fontSize, GRAY);
 
 
-	Button repeatButton = { "Repeat", fontSize, {textPosX + 100, textPosY + 200, 1, 1} };
+	Button repeatButton = { "Repeat", fontSize, {textPosX - 100, (self->wall.position.y + self->wall.numRow * SQUARE_SIZE), 1, 1} };
 	Button_drawRec(&repeatButton);
 
-	Button quitButton = { "Quit", fontSize, {textPosX - 100, textPosY + 200, 1, 1} };
+	Button quitButton = { "Quit", fontSize, {textPosX + 100, (self->wall.position.y + self->wall.numRow * SQUARE_SIZE), 1, 1} };
 	Button_drawRec(&quitButton);
 
 	Vector2 mousepoint = GetMousePosition();

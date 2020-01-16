@@ -4,7 +4,6 @@
 void SnakeGame_init(SnakeGame* self){
 	self->gameState		= PLAY;
 	self->framesCounter = 0;
-	self->startTime = clock();
 
 	self->windowSize = self->appPtr->windowSize;
 	SQUARE_SIZE = 40;
@@ -37,14 +36,11 @@ void SnakeGame_update(SnakeGame* self){
 
 				Snake_control(&self->snake);
 				Snake_move(&self->snake, self->framesCounter++);
-				if(Snake_isOutsideWall(&self->snake, &self->wall)){
-					self->gameState = GAMEOVER;
-				}
-				if(Snake_detectSelf(&self->snake, &self->wall)){
-					self->gameState = GAMEOVER;
-				}
-				Food_calculatePosition(&self->food, &self->wall, &self->snake);
+				if(Snake_isOutsideWall(&self->snake, &self->wall)) self->gameState = GAMEOVER;
+				if(Snake_detectSelf(&self->snake, &self->wall)) self->gameState = GAMEOVER;
 				Snake_detectFood(&self->snake, &self->food);
+
+				Food_calculatePosition(&self->food, &self->wall, &self->snake);
 
 			} else if(self->gameState == PAUSE){
 
@@ -67,14 +63,6 @@ SnakeGame_drawUI(SnakeGame* self){
 	int countTextPosX = self->windowSize.x / 4 * 3;
 	int countTextPosY = self->windowSize.y / 50 * 1 + fontSize / 2;
 	DrawText(FormatText("Count: %i", self->snake.segmentCount), countTextPosX, countTextPosY, fontSize / 2, MAROON);
-
-	clock_t currentTime = clock();
-	clock_t elapsedTime = currentTime - self->startTime;
-	double elapsedTimeInSeconds = ((double)elapsedTime) / CLOCKS_PER_SEC;
-
-	int timerTextPosX = self->windowSize.x / 4 * 1 - MeasureText("Time: ", fontSize / 2);
-	int timerTextPosY = self->windowSize.y / 50 * 1 + fontSize / 2;
-	DrawText(FormatText("Time: %.2f", elapsedTimeInSeconds), timerTextPosX, timerTextPosY, fontSize / 2, MAROON);
 }
 void SnakeGame_draw(SnakeGame* self){
 
