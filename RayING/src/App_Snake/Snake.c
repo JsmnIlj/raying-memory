@@ -8,7 +8,6 @@ void Snake_init(Snake* self, Board* wall){
 	}
 	self->segmentCount = 1;
 	self->speed = (Vector2){ 1, 0 };
-	self->color = SNAKE_HEAD_COLOR;
 	self->allowMove = true;
 }
 void Snake_draw(Snake* self, Board* wall){
@@ -17,7 +16,7 @@ void Snake_draw(Snake* self, Board* wall){
 		(int)(SQUARE_SIZE * self->segments[0].y + wall->position.y),
 		(int)(SQUARE_SIZE * self->segments[0].width),
 		(int)(SQUARE_SIZE * self->segments[0].height),
-		self->color
+		self->headColor
 	);
 
 	for(int i = 1; i < self->segmentCount; i++){
@@ -26,7 +25,7 @@ void Snake_draw(Snake* self, Board* wall){
 			(int)(SQUARE_SIZE * self->segments[i].y + wall->position.y),
 			(int)(SQUARE_SIZE * self->segments[i].width),
 			(int)(SQUARE_SIZE * self->segments[i].height),
-			SNAKE_TAIL_COLOR
+			self->tailColor
 		);
 	}
 }
@@ -94,3 +93,5 @@ bool Snake_detectFood(Snake* self, Food* food){
 		self->segmentCount += 1;
 	}
 }
+
+

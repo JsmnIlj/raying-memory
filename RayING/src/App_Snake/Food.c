@@ -5,11 +5,9 @@ void Food_init(Food* self, Board* wall){
 	self->position = (Vector2){ 0, 0 };
 	self->size = (Vector2){ 1, 1 };
 	self->isEaten = true;
-	self->color = FOOD_COLOR;
 
 }
 void Food_draw(Food* self, Board* wall){
-
 	DrawRectangle(
 		(int)(SQUARE_SIZE * self->position.x + wall->position.x),
 		(int)(SQUARE_SIZE * self->position.y + wall->position.y),
@@ -17,8 +15,6 @@ void Food_draw(Food* self, Board* wall){
 		(int)(SQUARE_SIZE * self->size.y),
 		self->color
 	);
-
-
 }
 void Food_calculatePosition(Food* self, Board* wall, Snake* snake){
 	if(self->isEaten){

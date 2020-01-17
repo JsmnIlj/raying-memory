@@ -2,11 +2,8 @@
 
 
 void Board_init(Board* self, int numCol, int numRow, int x, int y){
-
 	self->numCol = numCol;
 	self->numRow = numRow;
-
-
 
 	self->position.x = (float)x;
 	self->position.y = (float)y;
@@ -24,7 +21,7 @@ void Board_drawGrid(Board* self, Vector2 windowSize){
 			(int)self->position.y,
 			(int)self->position.x + i * SQUARE_SIZE,
 			(int)self->position.y + self->numCol * SQUARE_SIZE,
-			GRID_COLOR
+			self->color
 		);
 	}
 	//left-right
@@ -34,7 +31,7 @@ void Board_drawGrid(Board* self, Vector2 windowSize){
 			(int)self->position.y + i * SQUARE_SIZE,
 			(int)self->position.x + self->numRow * SQUARE_SIZE,
 			(int)self->position.y + i * SQUARE_SIZE,
-			GRID_COLOR
+			self->color
 		);
 	}
 }

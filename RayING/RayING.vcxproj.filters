@@ -45,6 +45,9 @@
     <ClCompile Include="src\App_Memory\App_Memory.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\WinHelper.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Library Include="src\extern\raylib.lib" />
@@ -78,6 +81,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\App_Memory\App_Memory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\WinHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

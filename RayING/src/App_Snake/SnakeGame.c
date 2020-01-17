@@ -9,10 +9,10 @@ void SnakeGame_init(SnakeGame* self){
 	self->windowSize = self->appPtr->windowSize;
 	SQUARE_SIZE = 40;
 	SQUARE_SIZE = self->windowSize.y/20;
-	SNAKE_HEAD_COLOR = DARKBLUE;
-	SNAKE_TAIL_COLOR = VIOLET;
-	FOOD_COLOR = SKYBLUE;
-	GRID_COLOR = LIGHTGRAY;
+	self->snake.headColor = DARKBLUE;
+	self->snake.tailColor = VIOLET;
+	self->food.color = SKYBLUE;
+	self->wall.color = LIGHTGRAY;
 
 	int bX = SQUARE_SIZE;
 	int bY = SQUARE_SIZE;
@@ -53,7 +53,7 @@ void SnakeGame_update(SnakeGame* self){
 		self->running = false;
 	}
 }
-SnakeGame_drawUI(SnakeGame* self){
+void SnakeGame_drawUI(SnakeGame* self){
 	int fontSize = self->windowSize.y / 22;
 	fontSize = self->windowSize.y / 10;
 	char* snakeText = "SNAKE";

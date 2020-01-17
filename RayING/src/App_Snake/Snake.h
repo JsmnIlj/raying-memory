@@ -8,6 +8,8 @@ typedef struct Snake{
 	int segmentCount;
 	Vector2 speed;
 	Color color;
+	Color headColor;
+	Color tailColor;
 	bool allowMove;
 } Snake;
 

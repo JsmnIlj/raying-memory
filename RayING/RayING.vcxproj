@@ -151,6 +151,7 @@
     <ClCompile Include="src\App_Snake\SnakeGame.c" />
     <ClCompile Include="src\Button.c" />
     <ClCompile Include="src\main.c" />
+    <ClCompile Include="src\WinHelper.c" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="src\extern\raylib.lib" />
@@ -166,6 +167,7 @@
     <ClInclude Include="src\App_Snake\Snake.h" />
     <ClInclude Include="src\App_Snake\SnakeGame.h" />
     <ClInclude Include="src\Button.h" />
+    <ClInclude Include="src\WinHelper.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

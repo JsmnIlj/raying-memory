@@ -24,12 +24,8 @@ typedef struct SnakeGame{
 	Food food;
 	Board wall;
 	int framesCounter;
-	clock_t startTime;
-	clock_t elapsedTime;
-	clock_t pausedTime;
 } SnakeGame;
 void SnakeGame_init(SnakeGame* self);
 void SnakeGame_update(SnakeGame* self);
 void SnakeGame_draw(SnakeGame* self);
 void SnakeGame_updateDrawFrame(SnakeGame* self);
-

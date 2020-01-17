@@ -7,6 +7,7 @@ typedef struct Board{
 	int numCol;
 	int numRow;
 	RenderTexture2D target;
+	Color color;
 } Board;
 
 void Board_init(Board* self, int numCol, int numRow, int x, int y);

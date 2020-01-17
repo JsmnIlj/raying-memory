@@ -1,5 +1,7 @@
 #include "App.h"
 #include "Button.h"
+#include "App_Snake/App_Snake.h"
+#include "App_Memory/App_Memory.h"
 
 enum GAME_STATE{
 	MENU,
@@ -31,101 +33,75 @@ void App_run(App* self){
 void menuState(App* self){
 	BeginDrawing();
 	ClearBackground(RAYWHITE);
-	int fontSize = 60;
 
-	Button titleButton = { "RayING", fontSize, {50, 10, 1, 1} };
+
+	float windowRatio = 7.0f / 100.0f;
+	int fontSize = self->windowSize.y * windowRatio;
+	Button titleButton = { "RayING", fontSize, {50, 00, 1, 1} };
 	Button_draw(&titleButton);
 
-	Button applicationsButton = { "Applications", fontSize, {50, 70, 1, 1} };
-	Button_drawRec(&applicationsButton);
 
-	Button optionsButton = { "Options", fontSize, {50, 130, 1, 1} };
-	Button_drawRec(&optionsButton);
-
-	Button quitButton = { "Quit", fontSize, {50, 190, 1, 1} };
-	Button_drawRec(&quitButton);
-
-
+	Vector2 mousepoint = GetMousePosition();
+	Button buttons[3];
+	char* menuNames[] = { "Applications", "Options", "Quit" };
+	for(int i = 0; i < 3; i++){
+		buttons[i] = (Button){ menuNames[i], fontSize, {50, 70 + 60 * i, 1, 1} };
+		Button_drawRec(&buttons[i]);
+		if(CheckCollisionPointRec(mousepoint, buttons[i].rec)){
+			switch(i){
+			case 0: if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) self->gameState = APPLICATIONS; break;
+			case 1: if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) self->gameState = OPTIONS; break;
+			case 2: if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) self->gameState = QUIT; break;
+			}
+		}
+	}
 	EndDrawing();
-
-	Vector2 mousepoint = GetMousePosition(); ;
-	if(CheckCollisionPointRec(mousepoint, applicationsButton.rec)){
-		if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-			self->gameState = APPLICATIONS;
-		}
-	}
-	if(CheckCollisionPointRec(mousepoint, optionsButton.rec)){
-		if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-			self->gameState = OPTIONS;
-		}
-	}
-	if(CheckCollisionPointRec(mousepoint, quitButton.rec)){
-		if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-			self->gameState = QUIT;
-		}
-	}
 }
 void applicationSelectionState(App* self){
 	BeginDrawing();
 	ClearBackground(RAYWHITE);
 
-	int fontSize = 60;
-
+	float windowRatio = 7.0f / 100.0f;
+	int fontSize = self->windowSize.y * windowRatio;
 
 	Button titleButton = { "Applications", fontSize, {50, 10, 1, 1} };
 	Button_draw(&titleButton);
 
-	Button memoryButton = { "Memory", fontSize, {50, 70, 1, 1} };
-	Button_drawRec(&memoryButton);
-
-	Button snakeButton = { "Snake", fontSize, {50, 130, 1, 1} };
-	Button_drawRec(&snakeButton);
-
-	Button towerButton = { "Tower Builder", fontSize, {50, 190, 1, 1} };
-	Button_drawRec(&towerButton);
-
-	Button backButton = { "Back", fontSize, {50, 250, 1, 1} };
-	Button_drawRec(&backButton);
-
-	EndDrawing();
 
 	Vector2 mousepoint = GetMousePosition();
-	if(CheckCollisionPointRec(mousepoint, backButton.rec)){
-		if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-			self->gameState = MENU;
+	Button buttons[4];
+	char* menuNames[] = { "Memory", "Snake", "Tower Builder", "Back" };
+	for(int i = 0; i < 4; i++){
+		buttons[i] = (Button){ menuNames[i], fontSize, {50, 70 + 60 * i, 1, 1} };
+		Button_drawRec(&buttons[i]);
+		if(CheckCollisionPointRec(mousepoint, buttons[i].rec)){
+			switch(i){
+			case 0: if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) initMemoryGame(self); break;
+			case 1: if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) initSnakeGame(self); break;
+			case 2: if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) break;
+			case 3: if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) self->gameState = MENU; break;
+			}
 		}
 	}
-
-	if(CheckCollisionPointRec(mousepoint, snakeButton.rec)){
-		if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-			initSnakeGame(self);
-		}
-	}
-
-	if(CheckCollisionPointRec(mousepoint, memoryButton.rec)){
-		if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-			initMemoryGame(self);
-		}
-	}
-
+	EndDrawing();
 }
 void optionsState(App* self){
 	BeginDrawing();
 	ClearBackground(RAYWHITE);
 
-	int fontSize = 60;
+	float windowRatio = 7.0f / 100.0f;
+	int fontSize = self->windowSize.y * windowRatio;
+
 	Button titleButton = { "Options", fontSize, {50, 10, 1, 1} };
 	Button_draw(&titleButton);
 
+	Vector2 mousepoint = GetMousePosition();
 	Button backButton = { "Back", fontSize, {50, 60, 1, 1} };
 	Button_drawRec(&backButton);
-
-	EndDrawing();
-
-	Vector2 mousepoint = GetMousePosition();
 	if(CheckCollisionPointRec(mousepoint, backButton.rec)){
 		if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
 			self->gameState = MENU;
 		}
 	}
+	EndDrawing();
 }
