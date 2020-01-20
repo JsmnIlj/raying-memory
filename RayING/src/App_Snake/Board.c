@@ -1,19 +1,16 @@
 #include "Board.h"
-
-
 void Board_init(Board* self, int numCol, int numRow, int x, int y){
 	self->numCol = numCol;
 	self->numRow = numRow;
 
-	self->position.x = (float)x;
-	self->position.y = (float)y;
-
 	self->position.x = GetMonitorWidth(0) / 2 - self->numCol * SQUARE_SIZE / 2;
 	self->position.y = GetMonitorHeight(0) / 2 - self->numRow * SQUARE_SIZE / 2;
+
+	self->color = BLACK;
 }
 void Board_drawGrid(Board* self, Vector2 windowSize){
-	self->position.x = windowSize.x/ 2 - self->numCol * SQUARE_SIZE / 2;
-	self->position.y = windowSize.y/ 2 - self->numRow * SQUARE_SIZE / 2;
+	self->position.x = windowSize.x / 2 - self->numCol * SQUARE_SIZE / 2;
+	self->position.y = windowSize.y / 2 - self->numRow * SQUARE_SIZE / 2;
 	//up-down
 	for(int i = 0; i <= self->numCol; i++){
 		DrawLine(

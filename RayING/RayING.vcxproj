@@ -146,9 +146,7 @@
     <ClCompile Include="src\App_Snake\App_Snake.c" />
     <ClCompile Include="src\App_Snake\Board.c" />
     <ClCompile Include="src\App_Snake\Food.c" />
-    <ClCompile Include="src\App_Snake\Menu.c" />
     <ClCompile Include="src\App_Snake\Snake.c" />
-    <ClCompile Include="src\App_Snake\SnakeGame.c" />
     <ClCompile Include="src\Button.c" />
     <ClCompile Include="src\main.c" />
     <ClCompile Include="src\WinHelper.c" />
@@ -163,9 +161,7 @@
     <ClInclude Include="src\App_Snake\Board.h" />
     <ClInclude Include="src\App_Snake\Food.h" />
     <ClInclude Include="src\App_Snake\GlobalVariables.h" />
-    <ClInclude Include="src\App_Snake\Menu.h" />
     <ClInclude Include="src\App_Snake\Snake.h" />
-    <ClInclude Include="src\App_Snake\SnakeGame.h" />
     <ClInclude Include="src\Button.h" />
     <ClInclude Include="src\WinHelper.h" />
   </ItemGroup>

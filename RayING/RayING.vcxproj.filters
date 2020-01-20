@@ -24,13 +24,10 @@
     <ClCompile Include="src\App.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\App_Snake\App_Snake.c">
+    <ClCompile Include="src\App_Memory\App_Memory.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\App_Snake\Menu.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\App_Snake\Snake.c">
+    <ClCompile Include="src\WinHelper.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\App_Snake\Board.c">
@@ -39,13 +36,10 @@
     <ClCompile Include="src\App_Snake\Food.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\App_Snake\SnakeGame.c">
+    <ClCompile Include="src\App_Snake\Snake.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\App_Memory\App_Memory.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\WinHelper.c">
+    <ClCompile Include="src\App_Snake\App_Snake.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -59,13 +53,10 @@
     <ClInclude Include="src\App.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\App_Snake\App_Snake.h">
+    <ClInclude Include="src\App_Memory\App_Memory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\App_Snake\Menu.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\App_Snake\Snake.h">
+    <ClInclude Include="src\WinHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\App_Snake\Board.h">
@@ -77,13 +68,10 @@
     <ClInclude Include="src\App_Snake\GlobalVariables.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\App_Snake\SnakeGame.h">
+    <ClInclude Include="src\App_Snake\Snake.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\App_Memory\App_Memory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\WinHelper.h">
+    <ClInclude Include="src\App_Snake\App_Snake.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

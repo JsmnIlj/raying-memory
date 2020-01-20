@@ -9,6 +9,9 @@ void Snake_init(Snake* self, Board* wall){
 	self->segmentCount = 1;
 	self->speed = (Vector2){ 1, 0 };
 	self->allowMove = true;
+
+	self->headColor = BLUE;
+	self->tailColor = DARKGREEN;
 }
 void Snake_draw(Snake* self, Board* wall){
 	DrawRectangle(
@@ -30,7 +33,7 @@ void Snake_draw(Snake* self, Board* wall){
 	}
 }
 void Snake_move(Snake* self, const int framesCounter){
-	if((framesCounter % 10) == 0){
+	if((framesCounter % 7) == 0){
 		for(int i = MAX_TAIL_LENGTH - 1; i > 0; i--){
 			self->segments[i] = self->segments[i - 1];
 		}
@@ -63,6 +66,7 @@ void Snake_control(Snake* self){
 		self->allowMove = false;
 	}
 }
+
 bool Snake_isOutsideWall(Snake* self, Board* wall){
 
 	if((self->segments[0].x < 0) ||
@@ -93,5 +97,3 @@ bool Snake_detectFood(Snake* self, Food* food){
 		self->segmentCount += 1;
 	}
 }
-
-

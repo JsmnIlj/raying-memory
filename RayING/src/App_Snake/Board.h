@@ -6,7 +6,6 @@ typedef struct Board{
 	Vector2 position;
 	int numCol;
 	int numRow;
-	RenderTexture2D target;
 	Color color;
 } Board;
 

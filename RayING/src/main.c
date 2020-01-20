@@ -8,11 +8,8 @@ int main(){
 	int monitorHeight = getMonitorHeight();
 	App app;
 	app.name = "RayING";
-	app.windowSize.x = monitorWidth - 100;
-	app.windowSize.y = monitorHeight - 100;
-
-	app.windowSize.x = 800;
-	app.windowSize.y = 800;
+	app.windowSize.x = monitorWidth  - (monitorWidth  / 10);
+	app.windowSize.y = monitorHeight - (monitorHeight / 10);
 
 	App_init(&app);
 	App_run(&app);
