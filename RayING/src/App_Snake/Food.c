@@ -5,7 +5,7 @@ void Food_init(Food* self, Board* wall){
 	self->position = (Vector2){ 0, 0 };
 	self->size = (Vector2){ 1, 1 };
 	self->isEaten = true;
-	self->color = GREEN;
+	self->color = SKYBLUE;
 
 }
 void Food_draw(Food* self, Board* wall){

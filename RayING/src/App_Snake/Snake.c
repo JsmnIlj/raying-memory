@@ -10,8 +10,8 @@ void Snake_init(Snake* self, Board* wall){
 	self->speed = (Vector2){ 1, 0 };
 	self->allowMove = true;
 
-	self->headColor = BLUE;
-	self->tailColor = DARKGREEN;
+	self->headColor = DARKBLUE;
+	self->tailColor = BLUE;
 }
 void Snake_draw(Snake* self, Board* wall){
 	DrawRectangle(

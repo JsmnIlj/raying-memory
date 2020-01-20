@@ -134,10 +134,10 @@ void State_Pause_Option(SnakeGame* self){
 	float fontSize = 75.0;
 	float widthOffset = 50.0;
 
-	enum N{ numButton = 3 };
+	enum N{ numButton = 4 };
 	Button buttons[numButton];
 	{
-		char* menuNames[numButton] = { "Snake Head Color", "Snake Head Color", "Back" };
+		char* menuNames[numButton] = { "Snake Head Color", "Snake Head Color", "Food Color", "Back" };
 		float widthOffset2 = 70;
 		for(int i = 0; i < numButton; i++){
 			Button_init(&buttons[i],
@@ -151,27 +151,41 @@ void State_Pause_Option(SnakeGame* self){
 			);
 		}
 	}
+
 	typedef struct Circle{
 		Vector2 position;
 		float radius;
 		Color color;
 	} Circle;
-	//Circle circle;
-	//for(int i = 0; i < 3; i++){
-	//	circle.radius = (fontSize * r.y) / 2;
-	//	circle.position.x = circle.radius + widthOffset * r.x + (float)MeasureText(buttons[0].name, fontSize) * r.x;
-	//	circle.position.y = -circle.radius + fontSize * r.y + (fontSize + 10) * r.y * 0 + fontSize * r.y;
-	//	circle.color = RED;
-	//}
 	enum {numCircle = 3};
-	Circle circle[numCircle];
-	Color colors[3] = { MAROON , DARKBLUE, DARKGREEN };
+	Circle headColorcircle[numCircle];
+	Color headColors[3] = { MAROON , DARKBLUE, DARKGREEN };
 	for(int i = 0; i < numCircle; i++){
-		circle[i].radius = (fontSize * r.y) / 2;
-		circle[i].position.x =  circle[i].radius + widthOffset * r.x + (float)MeasureText(buttons[0].name, fontSize) * r.x;
-		circle[i].position.y = -circle[i].radius + fontSize * r.y + (fontSize + 10) * r.y * 0 + fontSize * r.y;
-		circle[i].position.x += i * circle[i].radius * 2 + 40 *r.x;
-		circle[i].color = colors[i];
+		headColorcircle[i].radius = (fontSize * r.y) / 2;
+		headColorcircle[i].position.x = headColorcircle[i].radius + widthOffset * r.x + (float)MeasureText(buttons[0].name, fontSize) * r.x;
+		headColorcircle[i].position.y = -headColorcircle[i].radius + fontSize * r.y + (fontSize + 10) * r.y * 0 + fontSize * r.y;
+		headColorcircle[i].position.x += i * headColorcircle[i].radius * 2 + 40 *r.x;
+		headColorcircle[i].color = headColors[i];
+	}
+
+	Circle tailColorcircle[numCircle];
+	Color tailColors[3] = { RED , BLUE, LIME };
+	for(int i = 0; i < numCircle; i++){
+		tailColorcircle[i].radius = (fontSize * r.y) / 2;
+		tailColorcircle[i].position.x = tailColorcircle[i].radius + widthOffset * r.x + (float)MeasureText(buttons[0].name, fontSize) * r.x;
+		tailColorcircle[i].position.y = -tailColorcircle[i].radius + fontSize * r.y + (fontSize + 10) * r.y * 1 + fontSize * r.y;
+		tailColorcircle[i].position.x += i * tailColorcircle[i].radius * 2 + 40 * r.x;
+		tailColorcircle[i].color = tailColors[i];
+	}
+
+	Circle foodColorcircle[numCircle];
+	Color foodColors[3] = { PINK , SKYBLUE, GREEN  };
+	for(int i = 0; i < numCircle; i++){
+		foodColorcircle[i].radius = (fontSize * r.y) / 2;
+		foodColorcircle[i].position.x = foodColorcircle[i].radius + widthOffset * r.x + (float)MeasureText(buttons[0].name, fontSize) * r.x;
+		foodColorcircle[i].position.y = -foodColorcircle[i].radius + fontSize * r.y + (fontSize + 10) * r.y * 2 + fontSize * r.y;
+		foodColorcircle[i].position.x += i * foodColorcircle[i].radius * 2 + 40 * r.x;
+		foodColorcircle[i].color = foodColors[i];
 	}
 
 	bool optionState = true;
@@ -180,9 +194,19 @@ void State_Pause_Option(SnakeGame* self){
 		{
 			Vector2 mousepoint = GetMousePosition();
 			for(int i = 0; i < numCircle; i++){
-				if(CheckCollisionPointCircle(mousepoint, circle[i].position, circle[i].radius)){
+				if(CheckCollisionPointCircle(mousepoint, headColorcircle[i].position, headColorcircle[i].radius)){
 					if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-						self->snake.headColor = circle[i].color;
+						self->snake.headColor = headColorcircle[i].color;
+					}
+				}
+				if(CheckCollisionPointCircle(mousepoint, tailColorcircle[i].position, tailColorcircle[i].radius)){
+					if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+						self->snake.tailColor = tailColorcircle[i].color;
+					}
+				}
+				if(CheckCollisionPointCircle(mousepoint, foodColorcircle[i].position, foodColorcircle[i].radius)){
+					if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+						self->food.color = foodColorcircle[i].color;
 					}
 				}
 			}
@@ -201,7 +225,9 @@ void State_Pause_Option(SnakeGame* self){
 				Button_draw(&buttons[i]);
 			}
 			for(int i = 0; i < numCircle; i++){
-				DrawCircle(circle[i].position.x, circle[i].position.y, circle[i].radius, circle[i].color);
+				DrawCircle(headColorcircle[i].position.x, headColorcircle[i].position.y, headColorcircle[i].radius, headColorcircle[i].color);
+				DrawCircle(tailColorcircle[i].position.x, tailColorcircle[i].position.y, tailColorcircle[i].radius, tailColorcircle[i].color);
+				DrawCircle(foodColorcircle[i].position.x, foodColorcircle[i].position.y, foodColorcircle[i].radius, foodColorcircle[i].color);
 			}
 			EndDrawing();
 		}
