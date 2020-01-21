@@ -39,6 +39,9 @@
     <ClCompile Include="src\App_Snake\Snake.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\App_TowerBuilder\TowerBuilder.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\App_Snake\App_Snake.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -72,6 +75,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\App_Snake\App_Snake.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\App_TowerBuilder\TowerBuilder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

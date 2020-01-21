@@ -92,7 +92,9 @@ bool Snake_detectFood(Snake* self, Food* food){
 		(self->segments[0].x + self->segments[0].width) > food->position.x) &&
 		(self->segments[0].y							   < (food->position.y + food->size.y) &&
 	   (self->segments[0].y + self->segments[0].height)> food->position.y)){
-
+		Music music = LoadMusicStream("C:/Users/Artur/source/repos/RayING/Debug/Blop-Mark_DiAngelo-79054334.mp3");
+		PlayMusicStream(music);
+		UpdateMusicStream(music);
 		food->isEaten = true;
 		self->segmentCount += 1;
 	}
