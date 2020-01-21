@@ -2,7 +2,7 @@
 #include "Windows.h"
 
 int getMonitorWidth(){
-	return 	GetSystemMetrics(SM_CXSCREEN);
+	return GetSystemMetrics(SM_CXSCREEN);
 	
 }
 int getMonitorHeight(){
