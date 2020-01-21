@@ -2,6 +2,9 @@
 #include "raylib/raylib.h"
 #include "../Button.h"
 #include "../App.h"
+#include <time.h>
+#include <stdlib.h>
+#include <string.h.>
 
 //definieren von Game States
 enum GAME_STATE
@@ -19,6 +22,8 @@ typedef struct Cards
 {
 	Vector2 position;
 	Color color;
+	Color hiddenColor;
+	char initalized;
 } Cards;
 
 typedef struct MemoryGame
@@ -32,11 +37,41 @@ typedef struct MemoryGame
 } MemoryGame;
 
 
+void randClrPlacement(MemoryGame *g)
+{
+	srand(time(NULL));
+	Color colors[8] = { YELLOW, ORANGE, GREEN, PURPLE, LIME,
+		BLUE, RED, PINK };
+
+	for (int i = 0; i < 8; i++)
+	{
+		int a, b;
+		do {
+			a = rand() % 8;
+			b = rand() % 2;
+		} while (g->cards[a][b].initalized);
+
+		g->cards[a][b].initalized = 1;
+		g->cards[a][b].hiddenColor = colors[i];
+
+		
+		do {
+			a = rand() % 8;
+			b = rand() % 2;
+		} while (g->cards[a][b].initalized);
+
+		g->cards[a][b].initalized = 1;
+		g->cards[a][b].hiddenColor = colors[i];
+	}
+
+
+}
+
 void MemoryGame_init(MemoryGame* self) {
 
 	SetTargetFPS(60);
 	self->running = true;
-	self->gameState = MAINMENU;
+	self->gameState = PLAY;
 
 
 	self->windowSize = self->appPtr->windowSize;
@@ -50,9 +85,12 @@ void MemoryGame_init(MemoryGame* self) {
 		{
 			self->cards[i][j].position = (Vector2){ xpos, ypos };
 			self->cards[i][j].color = BLACK;
+			self->cards[i][j].initalized = 0;
 		}
 	}
+	randClrPlacement(self);
 }
+
 
 // Main game loop
 
@@ -65,12 +103,14 @@ void initMemoryGame(App* self)
 	while (memoryGame.running && !WindowShouldClose())
 	{
 		//update:
+
 		Vector2 mousepos = GetMousePosition();
 		int xpos = 100;
 		int ypos = 300;
 		int recWidth = 400;
 		int recHeight = 600;
 		int num = 8;
+
 		for (int i = 0; i < 8; i++)
 		{
 			for (int j = 0; j < 2; j++)
@@ -84,14 +124,17 @@ void initMemoryGame(App* self)
 
 				if (CheckCollisionPointRec(mousepos, rec))
 				{
-					if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-						memoryGame.cards[i][j].color = BLUE;
+					if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) 
+					{
+				//		memoryGame.cards[i][j].color;
+						memoryGame.cards[i][j].color = memoryGame.cards[i][j].hiddenColor;
 					}
 				}
 			}
 		}
 
 		//draw:
+
 		BeginDrawing();
 
 			ClearBackground(RAYWHITE);
