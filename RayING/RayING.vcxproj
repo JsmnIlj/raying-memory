@@ -147,6 +147,7 @@
     <ClCompile Include="src\App_Snake\Board.c" />
     <ClCompile Include="src\App_Snake\Food.c" />
     <ClCompile Include="src\App_Snake\Snake.c" />
+    <ClCompile Include="src\App_TowerBuilder\TowerBuilder.c" />
     <ClCompile Include="src\Button.c" />
     <ClCompile Include="src\main.c" />
     <ClCompile Include="src\WinHelper.c" />
@@ -162,6 +163,7 @@
     <ClInclude Include="src\App_Snake\Food.h" />
     <ClInclude Include="src\App_Snake\GlobalVariables.h" />
     <ClInclude Include="src\App_Snake\Snake.h" />
+    <ClInclude Include="src\App_TowerBuilder\TowerBuilder.h" />
     <ClInclude Include="src\Button.h" />
     <ClInclude Include="src\WinHelper.h" />
   </ItemGroup>
