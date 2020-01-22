@@ -90,7 +90,7 @@ void applicationSelectionState(App* self){
 			}
 			if(buttons[i].isClicked == true){
 				switch(i){
-				case 0: buttons[i].isClicked = false;  initMemoryGame(self); break;
+				case 0: buttons[i].isClicked = false;  init_memoryGame_main(self); break;
 				case 1: buttons[i].isClicked = false;  initSnakeGame2(self); break;
 				case 2:  buttons[i].isClicked = false;  initTowerBuilder(self);  break;
 				case 3: self->gameState = MENU; break;

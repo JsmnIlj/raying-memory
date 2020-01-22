@@ -22,6 +22,7 @@ typedef struct Cards
 	Vector2 position;
 	Color color;
 	Color hiddenColor;
+	Color initColor;
 	char initalized;
 } Cards;
 
@@ -54,7 +55,8 @@ void randClrPlacement(MemoryGame *g)
 		} while (g->cards[a][b].initalized);
 
 		g->cards[a][b].initalized = 1;
-		g->cards[a][b].hiddenColor = colors[i];
+		g->cards[a][b].hiddenColor = g->cards[a][b].initColor;
+		g->cards[a][b].initColor = colors[i];
 
 		
 		do {
@@ -63,7 +65,8 @@ void randClrPlacement(MemoryGame *g)
 		} while (g->cards[a][b].initalized);
 
 		g->cards[a][b].initalized = 1;
-		g->cards[a][b].hiddenColor = colors[i];
+		g->cards[a][b].hiddenColor = g->cards[a][b].initColor;
+		g->cards[a][b].initColor = colors[i];
 	}
 	//wird 2x durchgeführt weil wir jede farbe doppelt auf dem spielfeld brauchen
 }
@@ -75,7 +78,7 @@ void convertToRGB(MemoryGame *self)
 	Color GetColor(int hexValue);
 }
 
-//es muss überprüft werden, zwei ausgewählte karten die gleiche farbe haben.
+//es muss überprüft werden, ob zwei ausgewählte karten die gleiche farbe haben.
 int compareColor(Color a, Color b)
 {
 	if (a.r == b.r && a.g == b.g && a.b == b.b && a.a == b.a)
@@ -121,14 +124,14 @@ void updateGame_Easy(MemoryGame* self)
 }
 
 // auflistung der game-states, die wir verwenden werden
-void State_GameOver(MemoryGame* self);
-void State_Config(MemoryGame* self);
-void State_Pause(MemoryGame* self);
-void State_Play(MemoryGame* self);
-void State_MainMenu(MemoryGame* self);
+void memory_State_GameOver(MemoryGame* self);
+void memory_State_Config(MemoryGame* self);
+void memory_State_Pause(MemoryGame* self);
+void memory_State_Play(MemoryGame* self);
+void memory_State_MainMenu(MemoryGame* self);
 
 // initialisiere variablen für Buttongröße etc., damit wir sie in unserem Menü verwenden könenn
-void Button_init(Button* self, char* name, float recX, float recY, float recW, float recH, float fontSize, Vector2 ratio) 
+void memory_Button_init(Button* self, char* name, float recX, float recY, float recW, float recH, float fontSize, Vector2 ratio) 
 {
 	self->name = name;
 
@@ -143,7 +146,7 @@ void Button_init(Button* self, char* name, float recX, float recY, float recW, f
 }
 
 // vorgang wenn man die anwendung "memory" startet:
-void State_MainMenu(MemoryGame* self)
+void memory_State_MainMenu(MemoryGame* self)
 {
 	Vector2 r = self->ratio;
 	float fontSize = 75.0;
@@ -152,7 +155,7 @@ void State_MainMenu(MemoryGame* self)
 	Button titleButton;
 	{
 		float widthOffset = 50.0;
-		Button_init(&titleButton,
+		memory_Button_init(&titleButton,
 			"MEMORY",
 			widthOffset * r.x,
 			0,
@@ -234,7 +237,7 @@ void State_MainMenu(MemoryGame* self)
 }
 
 // vorgang, wenn das spiel gestartet wird:
-void State_Play(MemoryGame* self)
+void memory_State_Play(MemoryGame* self)
 {
 	MemoryGame memoryGame;
 	memoryGame.appPtr = self;
@@ -281,7 +284,6 @@ void State_Play(MemoryGame* self)
 				{
 					for (int j = 0; j < 2; j++)
 					{
-
 						Rectangle rec;
 						rec.x = memoryGame.cards[i][j].position.x + (recWidth + 10) * i;
 						rec.y = memoryGame.cards[i][j].position.y + (recHeight + 10) * j;
@@ -299,22 +301,27 @@ void State_Play(MemoryGame* self)
 								}
 								else
 								{
-									if (compareColor(memoryGame.cards[i][j].color, memoryGame.cards[i][j].initalized.color))
+									if (compareColor(memoryGame.cards[i][j].color, memoryGame.cards[i][j].initColor))
 									{
-										memoryGame.cards[i][j].color = memoryGame.selCard[i][j].color;
-										memoryGame.selCard[i][j].color = memoryGame.selCard[i][j].hiddenColor;
+										memoryGame.cards[i][j].color = memoryGame.selCard.color;
+										memoryGame.selCard.color = memoryGame.selCard.hiddenColor;
 									}
 									else
 									{
-										if (compareColor(memoryGame.cards[i][j].hiddenColor, memoryGame.selCard[i][j].hiddenColor))
+										if (compareColor(memoryGame.cards[i][j].hiddenColor, memoryGame.selCard.hiddenColor))
 										{
 											//begone, cards.
-											memoryGame.cards[i][j]->color = RAYWHITE;
-											memoryGame.selCard[i][j].color = RAYWHITE;
+											memoryGame.cards[i][j].color = RAYWHITE;
+											memoryGame.selCard.color = RAYWHITE;
 										}
 										else
 										{
 											//cards turn back to normal.
+											memoryGame.cards[i][j].color = BLACK;
+											memoryGame.selCard.color = BLACK;
+
+											memoryGame.cards[i][j].color = memoryGame.cards[i][j].initColor;
+
 										}
 									}
 								}
@@ -324,7 +331,7 @@ void State_Play(MemoryGame* self)
 				}
 			}
 			if (self->gameState == GAMEOVER) {
-				State_GameOver(self);
+				memory_State_GameOver(self);
 			}
 			if (self->gameState == QUIT) {
 				return;
@@ -359,7 +366,7 @@ void State_Play(MemoryGame* self)
 	return 0;
 }
 
-void State_Pause(MemoryGame* self)
+void memory_State_Pause(MemoryGame* self)
 {
 	Vector2 r = self->ratio;
 	float fontSize = 75.0;
@@ -405,7 +412,7 @@ void State_Pause(MemoryGame* self)
 					switch (i)
 					{
 					case 0: pauseState = false; self->gameState = PLAY;  break;
-					case 1: State_Config(self); break;
+					case 1: memory_State_Config(self); break;
 					case 2: pauseState = false; self->gameState = QUIT; break;
 					}
 				}
@@ -429,7 +436,7 @@ void State_Pause(MemoryGame* self)
 	}
 }
 
-void State_Config(MemoryGame* self)
+void memory_State_Config(MemoryGame* self)
 {
 	Vector2 r = self->ratio;
 	float fontSize = 75.0;
@@ -577,7 +584,7 @@ void State_Config(MemoryGame* self)
 	}
 }
 
-void State_GameOver(MemoryGame* self)
+void memory_State_GameOver(MemoryGame* self)
 {
 	Vector2 r = self->ratio;
 	float fontSize = 75.0;
@@ -589,7 +596,7 @@ void State_GameOver(MemoryGame* self)
 		char* menuNames[numButton] = { "Try Again", "Quit" };
 		float widthOffset2 = 70;
 		for (int i = 0; i < numButton; i++) {
-			Button_init(&buttons[i],
+			memory_Button_init(&buttons[i],
 				menuNames[i],
 				widthOffset * r.x,
 				fontSize * r.y + (fontSize + 10) * r.y * i,
@@ -636,11 +643,11 @@ void State_GameOver(MemoryGame* self)
 	}
 }
 
-void main(App* self)
+void init_memoryGame_main(App* self)
 {
 	MemoryGame memoryGame;
 	memoryGame.appPtr = self;
 
 	MemoryGame_init(&memoryGame);
-	State_MainMenu(&memoryGame);
+	memory_State_MainMenu(&memoryGame);
 }
