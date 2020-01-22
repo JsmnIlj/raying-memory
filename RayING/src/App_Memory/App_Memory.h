@@ -1,4 +1,4 @@
 #pragma once
 #include "../App.h"
 
-void initMemoryGame(App* self);
+void init_memoryGame_main(App* self);
