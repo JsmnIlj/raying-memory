@@ -60,6 +60,7 @@ void Button_init(Button* self, char* name, float recX, float recY, float recW, f
 	self->name = name;
 
 
+
 	self->rec.x = recX;
 	self->rec.y = recY;
 	self->rec.width = recW;

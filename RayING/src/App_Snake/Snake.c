@@ -40,6 +40,7 @@ void Snake_move(Snake* self, const int framesCounter){
 		self->segments[0].x += self->speed.x;
 		self->segments[0].y += self->speed.y;
 		self->allowMove = true;
+
 	}
 }
 void Snake_control(Snake* self){
