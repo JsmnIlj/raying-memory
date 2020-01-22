@@ -59,6 +59,7 @@ void State_MainMenu(SnakeGame* self);
 void Button_init(Button* self, char* name, float recX, float recY, float recW, float recH, float fontSize, Vector2 ratio){
 	self->name = name;
 
+
 	self->rec.x = recX;
 	self->rec.y = recY;
 	self->rec.width = recW;
