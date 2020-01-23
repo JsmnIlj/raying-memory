@@ -15,6 +15,7 @@ typedef struct Box{
 	bool isFalling;
 } Box;
 
+
 int initTowerBuilder(App* self){
 	enum GAME_STATE gameState = PLAY;
 
@@ -30,7 +31,7 @@ int initTowerBuilder(App* self){
 	enum {numBottomBoxes = 10};
 	Box bottomBoxes[numBottomBoxes];
 	for(int i = 0; i < 10; i++){
-		bottomBoxes[i].rec = (Rectangle){ 400, self->windowSize.y - 100, 100, 100 };
+		bottomBoxes[i].rec = (Rectangle){ self->windowSize.x / 2, self->windowSize.y - 100, 100, 100 };
 		bottomBoxes[i].speed.x = 0;
 		bottomBoxes[i].speed.y = 0;
 		bottomBoxes[i].color = BLUE;
@@ -38,7 +39,15 @@ int initTowerBuilder(App* self){
 		bottomBoxes[i].isFalling = false;
 	}
 
-	int speed = 4;
+	//Speed
+	double speed = 4.0f;
+
+	//Score
+	int score = 0;
+
+	//RandomStart Variables
+	int upper = GetScreenWidth() - box.rec.width;
+	int lower = box.rec.width;
 
 	while(!WindowShouldClose()){
 		//Update
@@ -59,7 +68,7 @@ int initTowerBuilder(App* self){
 
 				if(box.isFalling == true){
 					box.speed.x = 0;
-					box.speed.y = 4;
+					box.speed.y = 6;
 				} else{
 					box.speed.x = speed;
 					box.speed.y = 0;
@@ -81,10 +90,26 @@ int initTowerBuilder(App* self){
 
 						box.isFalling = false;
 
-						box.rec.x = startPosition.x;
+						//Speed Increase
+						speed *= 1.2;
+
+						//Randomise MovingBox location
+						box.rec.x = rand() % (upper - lower + 1) + lower;
+
+						//Increase startposition
 						startPosition.y -= box.rec.height;
 
+						//Reset of falling Box
 						box.rec.y = startPosition.y;
+
+						//ScoreCounter
+						score += 1;
+
+						//if(score >= 4){
+						//	for(int i = 0;)
+	
+
+						//}
 						
 						} else{
 							gameState = GAMEOVER;
@@ -114,8 +139,10 @@ int initTowerBuilder(App* self){
 			DrawText("GAMEOVER", 400, 400, 60, BLUE);
 		}
 
+		//ScoreDraw
+		DrawText(FormatText("SCORE: %i", score), 50, 50, 40, MAROON);
 
-		//DrawText(FormatText("Score: %08i", score), self->windowSize.x+200, 0, 20, RED);
+		DrawText("F to drop the Box",GetScreenWidth()-200, 50, 40, MAROON);
 		
 
 		
