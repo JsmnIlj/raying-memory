@@ -81,6 +81,7 @@ void applicationSelectionState(App* self){
 	Button buttons[numApp];
 	char* menuNames[] = { "Memory", "Snake", "Tower Builder", "Back", "Snake2" };
 
+
 	for(int i = 0; i < numApp; i++){
 		buttons[i] = (Button){ menuNames[i], fontSize * r.y, {widthOffset2 * r.x, fontSize * r.y + (fontSize + 10) * r.y * i, MeasureText(menuNames[i], fontSize), fontSize}, r };
 		Button_drawRec(&buttons[i]);
