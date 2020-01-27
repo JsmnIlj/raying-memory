@@ -34,8 +34,6 @@ typedef struct MemoryGame
 	Vector2 windowSize;
 	App* appPtr;
 	Cards cards[8][2];
-	Cards selCard; //selected Card
-	Cards comCard; //comparison card
 	Vector2 ratio;
 	int framesCounter;
 } MemoryGame;
@@ -125,6 +123,21 @@ void updateGame_Easy(MemoryGame* self)
 	for (int i = 0; i < 8; i++) // i = columns
 	{
 		for (int j = 0; j < 2; j++) // j = rows
+		{
+			self->cards[i][j].position = (Vector2){ xpos, ypos };
+			self->cards[i][j].color = BLACK;
+			self->cards[i][j].initalized = 0;
+		}
+	}
+	randClrPlacement(self); //generiert zufällig 8 farben und platziert diese auf dem spielfeld
+}
+void updateGame_Medium(MemoryGame* self)
+{
+	int xpos = 100;
+	int ypos = 300;
+	for (int i = 0; i < 6; i++) // i = columns
+	{
+		for (int j = 0; j < 4; j++) // j = rows
 		{
 			self->cards[i][j].position = (Vector2){ xpos, ypos };
 			self->cards[i][j].color = BLACK;
@@ -243,6 +256,18 @@ void memory_State_MainMenu(MemoryGame* self)
 
 }
 
+
+
+bool isCardColorSame(Cards* selCard0, Cards* selCard1) {
+	Color a = selCard0->hiddenColor;
+	Color b = selCard1->hiddenColor;
+	if (a.r == b.r && a.g == b.g && a.b == b.b && a.a == b.a) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
 // vorgang, wenn das spiel gestartet wird:
 void memory_State_Play(MemoryGame* self)
 {
@@ -264,17 +289,19 @@ void memory_State_Play(MemoryGame* self)
 	bool playState = true;
 	//zeichne ein array aus karten:
 	updateGame_Easy(self);
-	Vector2 selectedCards[2] = { {-1, -1}, {-1, -1 } };
 
-	while (playState && !WindowShouldClose())
+	bool isCard0Selected = false;
+	bool isCard1Selected = false;
+	Cards* selectedCard0 = NULL;
+	Cards* selectedCard1 = NULL;
 
-	{
+
+	while (playState && !WindowShouldClose()) {
 		//Update
 
 		Vector2 mousepos = GetMousePosition();
 		{
-			if (self->gameState != GAMEOVER && self->gameState != QUIT)
-			{
+			if (self->gameState != GAMEOVER && self->gameState != QUIT) {
 				if (IsKeyReleased(KEY_B))
 				{
 					self->gameState = MAINMENU; //wird der B-Knopf gedrückt kommen wir zurück ins hauptmenü
@@ -288,70 +315,50 @@ void memory_State_Play(MemoryGame* self)
 					memory_State_Pause(self);
 				}
 
-				for (int i = 0; i < 8; i++)
-				{
-					for (int j = 0; j < 2; j++)
-					{
+
+
+				for (int i = 0; i < 8; i++) {
+					for (int j = 0; j < 2; j++) {
 						Rectangle rec;
 						rec.x = self->cards[i][j].position.x + (recWidth + 10) * i;
 						rec.y = self->cards[i][j].position.y + (recHeight + 10) * j;
 						rec.width = recWidth;
 						rec.height = recHeight;
 						Color noCardColor = RAYWHITE;
-						if (CheckCollisionPointRec(mousepos, rec))
-						{
-							if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-							{
-								/*if (self->cards[i][j].isTurned == false) {
-									self->cards[i][j].isTurned = true;
+						if (CheckCollisionPointRec(mousepos, rec)) {
+							if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
 
-									if (&selectedCards[0].x == -1 && &selectedCards[0].y == -1) {
-										selectedCards[0] = (Vector2){ i, j };
-										selectedCards[0].color = self->selCard.color;
+								if (isCard0Selected == true && isCard1Selected == true) {
+
+									if (isCardColorSame(selectedCard0, selectedCard1)) {
+										Color matchedColor = selectedCard0->hiddenColor;
+										matchedColor.a = 90;
+
+
+										selectedCard0->hiddenColor = matchedColor;
+										selectedCard1->hiddenColor = matchedColor;
+
+
 									}
 									else {
-										if (&selectedCards[1].x == -1 && &selectedCards[1].y == -1) {
-											selectedCards[1] = (Vector2){ i, j };
-										}
+										selectedCard0->isTurned = false;
+										isCard0Selected = false;
 
-										if (self->cards[(int)selectedCards[0].x][(int)selectedCards[0].y].color ==
-											self->cards[(int)selectedCards[1].x][(int)selectedCards[1].y].color)
-									}
-
-								}*/
-
-								if (compareColor(self->cards[i][j].color, noCardColor))
-								{
-									self->cards[i][j].color = noCardColor;
-								}
-								else
-								{
-									if (compareColor(self->cards[i][j].color, self->cards[i][j].initColor))
-									{
-										self->cards[i][j].color = self->selCard.color;
-										self->selCard.color = self->selCard.hiddenColor;
-									}
-									else
-									{
-
-
-										if (compareColor(self->cards[i][j].hiddenColor, self->selCard.hiddenColor))
-										{
-											//begone, cards.
-											self->cards[i][j].color = RAYWHITE;
-											self->selCard.color = RAYWHITE;
-										}
-										else
-										{
-											//cards turn back to normal.
-											self->cards[i][j].color = BLACK;
-											self->selCard.color = BLACK;
-
-											self->cards[i][j].color = self->cards[i][j].initColor;
-
-										}
+										selectedCard1->isTurned = false;
+										isCard1Selected = false;
 									}
 								}
+								if (isCard0Selected == false && isCard1Selected == false) {
+									selectedCard0 = &self->cards[i][j];
+									selectedCard0->isTurned = true;
+									isCard0Selected = true;
+								}
+								else if (isCard0Selected == true && isCard1Selected == false) {
+									selectedCard1 = &self->cards[i][j];
+									selectedCard1->isTurned = true;
+									isCard1Selected = true;
+								}
+
 							}
 						}
 					}
@@ -382,7 +389,12 @@ void memory_State_Play(MemoryGame* self)
 				rec.width = recWidth;
 				rec.height = recHeight;
 
-				DrawRectangle(rec.x, rec.y, recWidth, recHeight, self->cards[i][j].color);
+				if (self->cards[i][j].isTurned == false) {
+					DrawRectangle(rec.x, rec.y, recWidth, recHeight, self->cards[i][j].color);
+				}
+				else if (self->cards[i][j].isTurned == true) {
+					DrawRectangle(rec.x, rec.y, recWidth, recHeight, self->cards[i][j].hiddenColor);
+				}
 
 
 			}
