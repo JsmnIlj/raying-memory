@@ -50,11 +50,11 @@ void drawCurrentPlayState(SnakeGame* self){
 	Snake_draw(&self->snake, &self->board);
 }
 
-void State_GameOver(SnakeGame* self);
-void State_Pause_Option(SnakeGame* self);
-void State_Pause(SnakeGame* self);
-void State_Play(SnakeGame* self);
-void State_MainMenu(SnakeGame* self);
+static void State_GameOver(SnakeGame* self);
+static void State_Pause_Option(SnakeGame* self);
+static void State_Pause(SnakeGame* self);
+static void State_Play(SnakeGame* self);
+static void State_MainMenu(SnakeGame* self);
 
 void Button_init(Button* self, char* name, float recX, float recY, float recW, float recH, float fontSize, Vector2 ratio){
 	self->name = name;
@@ -71,7 +71,7 @@ void Button_init(Button* self, char* name, float recX, float recY, float recW, f
 	self->isClicked = false;
 }
 
-void State_GameOver(SnakeGame* self){
+static void State_GameOver(SnakeGame* self){
 	Vector2 r = self->ratio;
 	float fontSize = 75.0;
 	float widthOffset = 50.0;
@@ -131,7 +131,10 @@ void State_GameOver(SnakeGame* self){
 		}
 	}
 }
-void State_Pause_Option(SnakeGame* self){
+
+
+
+static void State_Pause_Option(SnakeGame* self){
 	Vector2 r = self->ratio;
 	float fontSize = 75.0;
 	float widthOffset = 50.0;
@@ -154,7 +157,7 @@ void State_Pause_Option(SnakeGame* self){
 		}
 	}
 
-	typedef struct Circle{
+	typedef struct Circle {
 		Vector2 position;
 		float radius;
 		Color color;
@@ -258,7 +261,7 @@ void State_Pause_Option(SnakeGame* self){
 		}
 	}
 }
-void State_Pause(SnakeGame* self){
+static void State_Pause(SnakeGame* self){
 	Vector2 r = self->ratio;
 	float fontSize = 75.0;
 	float widthOffset = 50.0;
@@ -323,7 +326,7 @@ void State_Pause(SnakeGame* self){
 	}
 
 }
-void State_Play(SnakeGame* self){
+static void State_Play(SnakeGame* self){
 	Vector2 r = self->ratio;
 	float fontSize = 75.0;
 	float widthOffset = 50.0;
@@ -381,7 +384,7 @@ void State_Play(SnakeGame* self){
 	}
 
 }
-void State_MainMenu(SnakeGame* self){
+static void State_MainMenu(SnakeGame* self){
 	Vector2 r = self->ratio;
 	float fontSize = 75.0;
 
@@ -447,19 +450,6 @@ void State_MainMenu(SnakeGame* self){
 		{
 			BeginDrawing();
 			ClearBackground(RAYWHITE);
-			int x = 400;
-			int y = 400;
-			int w = 30;
-			int h = 30;
-			typedef struct Rec{
-				int x;
-				int y;
-				int w;
-				int h;
-			} Rec;
-			Rec rec = { 400, 400, 30 ,30 };
-			DrawRectangle(rec.x, rec.y, rec.w, rec.h, RED);
-			DrawRectangle(x, y, w, h, RED);
 
 			Button_draw(&titleButton);
 			for(int i = 0; i < numButton; i++){

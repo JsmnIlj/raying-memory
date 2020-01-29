@@ -2,12 +2,12 @@
 #include "..//App.h"
 #include "raylib/raylib.h"
 
-enum GAME_STATE{
+enum GAME_STATE {
 	PLAY,
 	PAUSE,
 	GAMEOVER
 };
-typedef struct Box{
+typedef struct Box {
 	Rectangle rec;
 	Vector2 speed;
 	Color color;
@@ -15,109 +15,126 @@ typedef struct Box{
 	bool isFalling;
 } Box;
 
+#define MAX_BOXES 10
+typedef struct TBGame {
+	App* appPtr;
 
-int initTowerBuilder(App* self){
-	enum GAME_STATE gameState = PLAY;
+	int score;
 
-	Vector2 startPosition = { 200, 400 };
-	Box box;
-	box.rec = (Rectangle){ startPosition.x, startPosition.y, 100, 100 };
-	box.speed.x = 4;
-	box.speed.y = 0;
-	box.color = RED;
-	box.isSet = false;
-	box.isFalling = false;
+	Vector2 startPosition;
+	Box mainBox;
+	Box bottomBoxes[MAX_BOXES];
+}TBGame;
 
-	enum {numBottomBoxes = 10};
-	Box bottomBoxes[numBottomBoxes];
-	for(int i = 0; i < 10; i++){
-		bottomBoxes[i].rec = (Rectangle){ self->windowSize.x / 2, self->windowSize.y - 100, 100, 100 };
-		bottomBoxes[i].speed.x = 0;
-		bottomBoxes[i].speed.y = 0;
-		bottomBoxes[i].color = BLUE;
-		bottomBoxes[i].isSet = false;
-		bottomBoxes[i].isFalling = false;
+TBGame_init(TBGame* self) {
+	self->score = 0;
+	self->startPosition = (Vector2){ 200, 400 };
+	self->mainBox.rec = (Rectangle){ self->startPosition.x, self->startPosition.y, 100, 100 };
+	self->mainBox.speed.x = 4;
+	self->mainBox.speed.y = 0;
+	self->mainBox.color = RED;
+	self->mainBox.isSet = false;
+	self->mainBox.isFalling = false;
+
+	for(int i = 0; i < 10; i++) {
+		self->bottomBoxes[i].rec = (Rectangle){ self->appPtr->windowSize.x / 2, self->appPtr->windowSize.y - 100, 100, 100 };
+		self->bottomBoxes[i].speed.x = 0;
+		self->bottomBoxes[i].speed.y = 0;
+		self->bottomBoxes[i].color = BLUE;
+		self->bottomBoxes[i].isSet = false;
+		self->bottomBoxes[i].isFalling = false;
 	}
+}
 
-	//Speed
-	double speed = 4.0f;
+void Box_move(Box* self) {
+	if(self->isFalling == true) {
+		self->speed.x = 0;
+		self->speed.y = 6;
+	}
+	self->rec.x += self->speed.x;
+	self->rec.y += self->speed.y;
 
-	//Score
-	int score = 0;
 
-	//RandomStart Variables
-	int upper = GetScreenWidth() - box.rec.width;
-	int lower = box.rec.width;
+}
+void Box_collisionWithBorder(Box* self, float windowSizeX) {
+	if(self->rec.x < 0 || self->rec.x + self->rec.width > windowSizeX) {
+		self->speed.x *= -1.0f;
+	}
+}
+Box_addToBottom(Box* self, Box* bottombox) {
 
-	while(!WindowShouldClose()){
+}
+
+int initTowerBuilder(App* self) {
+	enum GAME_STATE gameState = PLAY;
+	TBGame tB;
+	tB.appPtr = self;
+	TBGame_init(&tB);
+
+	while(!WindowShouldClose()) {
 		//Update
-		
-		if(gameState != GAMEOVER){
-			if(IsKeyPressed(KEY_SPACE)){
-				if(gameState == PAUSE){
+		if(gameState != GAMEOVER) {
+
+			if(IsKeyPressed(KEY_SPACE)) {
+				if(gameState == PAUSE) {
 					gameState = PLAY;
-				} else{
+				} else {
 					gameState = PAUSE;
 				}
 			}
-			if(gameState != PAUSE){
-				if(IsKeyPressed(KEY_F)){
-					box.isFalling = true;
-					
-				}
 
-				if(box.isFalling == true){
-					box.speed.x = 0;
-					box.speed.y = 6;
-				} else{
-					box.speed.x = speed;
-					box.speed.y = 0;
+			if(gameState != PAUSE) {
+				if(IsKeyPressed(KEY_F)) {
+					tB.mainBox.isFalling = true;
 				}
-				box.rec.x += box.speed.x;
-				box.rec.y += box.speed.y;
+				Box_move(&tB.mainBox);
+				Box_collisionWithBorder(&tB.mainBox, tB.appPtr->windowSize.x);
 
-				if(box.rec.x < 0 || box.rec.x + box.rec.width > self->windowSize.x){
-
-					speed *= -1;
-				}
 
 				//BoxPlacement after Collision w/ startBox
-				for(int i = 0; i < numBottomBoxes; i++){
-					if(CheckCollisionRecs(box.rec, bottomBoxes[i].rec)){
-						if(bottomBoxes[i].isSet == false) {
-						bottomBoxes[i + 1] = box;
-						bottomBoxes[i].isSet = true;
+				for(int i = 0; i < MAX_BOXES; i++) {
+					if(CheckCollisionRecs(tB.mainBox.rec, tB.bottomBoxes[i].rec)) {
+						if(tB.bottomBoxes[i].isSet == false) {
+							Box_addToBottom(&tB.mainBox, &tB.bottomBoxes[i]);
 
-						box.isFalling = false;
+							tB.bottomBoxes[i + 1] = tB.mainBox;
+							tB.bottomBoxes[i].isSet = true;
 
-						//Speed Increase
-						speed *= 1.2;
+							tB.mainBox.isFalling = false;
 
-						//Randomise MovingBox location
-						box.rec.x = rand() % (upper - lower + 1) + lower;
+							//Speed Increase
+							tB.mainBox.speed.x *= 1.2;
 
-						//Increase startposition
-						startPosition.y -= box.rec.height;
+							//Randomise MovingBox locationes
+							int upper = GetScreenWidth() - tB.mainBox.rec.width;
+							int lower = tB.mainBox.rec.width;
+							tB.mainBox.rec.x = rand() % (upper - lower + 1) + lower;
 
-						//Reset of falling Box
-						box.rec.y = startPosition.y;
+							//Increase startposition
+							tB.startPosition.y -= tB.mainBox.rec.height;
 
-						//ScoreCounter
-						score += 1;
+							//Reset of falling Box
+							tB.mainBox.rec.y = tB.startPosition.y;
+							tB.mainBox.isFalling = false;
+							tB.mainBox.speed.x = 4;
+							tB.mainBox.speed.y = 0;
 
-						//if(score >= 4){
-						//	for(int i = 0;)
-	
+							//ScoreCounter
+							tB.score += 1;
 
-						//}
-						
-						} else{
+							//if(score >= 4){
+							//	for(int i = 0;)
+
+
+							//}
+
+						} else {
 							gameState = GAMEOVER;
 						}
 					}
 				}
 				//Collision with floor
-				if(box.rec.y + box.rec.height > self->windowSize.y){
+				if(tB.mainBox.rec.y + tB.mainBox.rec.height > self->windowSize.y) {
 					gameState = GAMEOVER;
 				}
 			}
@@ -128,24 +145,24 @@ int initTowerBuilder(App* self){
 		// Draw
 		BeginDrawing();
 		ClearBackground(RAYWHITE);
-		
+
 		//DrawTower Boxes 
-		DrawRectangleRec(box.rec, box.color);
-		for(int i = 0; i < numBottomBoxes; i++){
-			DrawRectangleRec(bottomBoxes[i].rec, bottomBoxes[i].color);
+		DrawRectangleRec(tB.mainBox.rec, tB.mainBox.color);
+		for(int i = 0; i < MAX_BOXES; i++) {
+			DrawRectangleRec(tB.bottomBoxes[i].rec, tB.bottomBoxes[i].color);
 		}
-		
-		if(gameState == GAMEOVER){
+
+		if(gameState == GAMEOVER) {
 			DrawText("GAMEOVER", 400, 400, 60, BLUE);
 		}
 
 		//ScoreDraw
-		DrawText(FormatText("SCORE: %i", score), 50, 50, 40, MAROON);
+		DrawText(FormatText("SCORE: %i", tB.score), 50, 50, 40, MAROON);
 
-		DrawText("F to drop the Box",GetScreenWidth()-200, 50, 40, MAROON);
-		
+		DrawText("F to drop the Box", GetScreenWidth() - 200, 50, 40, MAROON);
 
-		
+
+
 		DrawFPS(10, 10);
 
 		EndDrawing();
@@ -153,20 +170,3 @@ int initTowerBuilder(App* self){
 
 	return 0;
 }
-/*
-static float x = 5.0f;
-static float recPos = 0;
-
-	if (IsKeyPressed(KEY_A)) {
-		  x = 0;
-		  collision = CheckCollisionRecs(boxA, boxB);
-	  }
-	  recPos += x;
-	  if (recPos >= 500) {
-		  x *= -1;
-	  }
-
-	   if (recPos <= 0) {
-		  x *= -1;
-	  }
-	  */
