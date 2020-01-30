@@ -4,7 +4,6 @@
 #include "../App.h"
 #include <time.h>
 #include <stdlib.h>
-#include <string.h.>
 
 //definieren von Game States
 enum GAME_STATE
@@ -34,8 +33,6 @@ typedef struct MemoryGame
 	Vector2 windowSize;
 	App* appPtr;
 	Cards cards[8][2];
-	Cards selCard; //selected Card
-	Cards comCard; //comparison card
 	Vector2 ratio;
 	int framesCounter;
 } MemoryGame;
@@ -58,7 +55,6 @@ void randClrPlacement(MemoryGame* g)
 		g->cards[a][b].hiddenColor = g->cards[a][b].initColor;
 		g->cards[a][b].initColor = colors[i];
 
-
 		do {
 			a = rand() % 8;
 			b = rand() % 2;
@@ -71,38 +67,24 @@ void randClrPlacement(MemoryGame* g)
 	//wird 2x durchgeführt weil wir jede farbe doppelt auf dem spielfeld brauchen
 }
 
-//konvertiere den namen der Farbe in ein RGB-Struct. evtl später notewendig zum überprüfen der farben.
-void convertToRGB(MemoryGame* self)
-{
-	int ColorToInt(Color color);
-	Color GetColor(int hexValue);
-}
-
 //es muss überprüft werden, ob zwei ausgewählte karten die gleiche farbe haben.
-int compareColor(Color a, Color b)
+int compareColor(const Color a, const Color b)
 {
-	if (a.r == b.r && a.g == b.g && a.b == b.b && a.a == b.a) {
-		return 1;
-	}
-	else {
-		return 0;
-	}
+	return (a.r == b.r && a.g == b.g && a.b == b.b && a.a == b.a);
 }
 
 void MemoryGame_init(MemoryGame* self)
 {
-
 	SetTargetFPS(60);
 	self->running = true;
 	self->gameState = MAINMENU;
 	self->framesCounter = 0;
-
-
 	self->windowSize = self->appPtr->windowSize;
 	self->ratio = self->appPtr->r;
 
 	int xpos = 100;
 	int ypos = 300;
+
 	for (int i = 0; i < 8; i++) // i = columns
 	{
 		for (int j = 0; j < 2; j++) // j = rows
@@ -113,18 +95,34 @@ void MemoryGame_init(MemoryGame* self)
 			self->cards[i][j].isTurned = false;
 		}
 	}
+
 	randClrPlacement(self); //generiert zufällig 8 farben und platziert diese auf dem spielfeld
-
-
 }
 
 void updateGame_Easy(MemoryGame* self)
 {
 	int xpos = 100;
 	int ypos = 300;
+
 	for (int i = 0; i < 8; i++) // i = columns
 	{
 		for (int j = 0; j < 2; j++) // j = rows
+		{
+			self->cards[i][j].position = (Vector2){ xpos, ypos };
+			self->cards[i][j].color = BLACK;
+			self->cards[i][j].initalized = 0;
+		}
+	}
+
+	randClrPlacement(self); //generiert zufällig 8 farben und platziert diese auf dem spielfeld
+}
+void updateGame_Medium(MemoryGame* self)
+{
+	int xpos = 100;
+	int ypos = 300;
+	for (int i = 0; i < 6; i++) // i = columns
+	{
+		for (int j = 0; j < 4; j++) // j = rows
 		{
 			self->cards[i][j].position = (Vector2){ xpos, ypos };
 			self->cards[i][j].color = BLACK;
@@ -226,242 +224,203 @@ void memory_State_MainMenu(MemoryGame* self)
 				}
 			}
 		}
+
 		// Draw
 		{
 			BeginDrawing();
 			ClearBackground(RAYWHITE);
-
 			Button_draw(&titleButton);
+
 			for (int i = 0; i < numButton; i++)
 			{
 				Button_drawRec(&buttons[i]);
 			}
+
 			EndDrawing();
 		}
 	}
-
-
 }
 
 // vorgang, wenn das spiel gestartet wird:
 void memory_State_Play(MemoryGame* self)
 {
-
-	Vector2 r = self->appPtr->r;
-
-	float fontSize = 75.0;
-	float widthOffset = 50.0;
-
-
-	int xpos = 100;
-	int ypos = 300;
 	int recWidth = 400;
 	int recHeight = 600;
-	int num = 8;
-
-
 	self->gameState = PLAY;
 	bool playState = true;
-	//zeichne ein array aus karten:
 	updateGame_Easy(self);
-	Vector2 selectedCards[2] = { {-1, -1}, {-1, -1 } };
+	Cards* prevCard = NULL;
+	Cards* nextCard = NULL;
+	char x = 0;
+	char isGameOver = 16;
+
 
 	while (playState && !WindowShouldClose())
-
 	{
-		//Update
-
 		Vector2 mousepos = GetMousePosition();
+
+		if (self->gameState == QUIT) {
+			return;
+		}
+
+		if (self->gameState == GAMEOVER) {
+			memory_State_GameOver(self);
+		}
+		else
 		{
-			if (self->gameState != GAMEOVER && self->gameState != QUIT)
+			if (IsKeyReleased(KEY_B))
 			{
-				if (IsKeyReleased(KEY_B))
-				{
-					self->gameState = MAINMENU; //wird der B-Knopf gedrückt kommen wir zurück ins hauptmenü
-					playState = false;
-				}
-				if (IsKeyReleased(KEY_SPACE))
-				{
-					self->gameState = PAUSE; //wenn wir die leertaste drücken wird das spiel pausiert.
-				}
-				if (self->gameState == PAUSE) {
-					memory_State_Pause(self);
-				}
+				self->gameState = MAINMENU; //wird der B-Knopf gedrückt kommen wir zurück ins hauptmenü
+				playState = false;
+			}
+			if (IsKeyReleased(KEY_SPACE))
+			{
+				self->gameState = PAUSE; //wenn wir die leertaste drücken wird das spiel pausiert.
+			}
+			if (self->gameState == PAUSE) {
+				memory_State_Pause(self);
+			}
 
-				for (int i = 0; i < 8; i++)
+			for (int i = 0; i < 8; i++)
+			{
+				for (int j = 0; j < 2; j++)
 				{
-					for (int j = 0; j < 2; j++)
+					Rectangle rec;
+					rec.x = self->cards[i][j].position.x + (recWidth + 10) * i;
+					rec.y = self->cards[i][j].position.y + (recHeight + 10) * j;
+					rec.width = recWidth;
+					rec.height = recHeight;
+
+					if (CheckCollisionPointRec(mousepos, rec))
 					{
-						Rectangle rec;
-						rec.x = self->cards[i][j].position.x + (recWidth + 10) * i;
-						rec.y = self->cards[i][j].position.y + (recHeight + 10) * j;
-						rec.width = recWidth;
-						rec.height = recHeight;
-						Color noCardColor = RAYWHITE;
-						if (CheckCollisionPointRec(mousepos, rec))
+						if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
 						{
-							if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+
+							if (nextCard && prevCard)
 							{
-								/*if (self->cards[i][j].isTurned == false) {
-									self->cards[i][j].isTurned = true;
-
-									if (&selectedCards[0].x == -1 && &selectedCards[0].y == -1) {
-										selectedCards[0] = (Vector2){ i, j };
-										selectedCards[0].color = self->selCard.color;
-									}
-									else {
-										if (&selectedCards[1].x == -1 && &selectedCards[1].y == -1) {
-											selectedCards[1] = (Vector2){ i, j };
-										}
-
-										if (self->cards[(int)selectedCards[0].x][(int)selectedCards[0].y].color ==
-											self->cards[(int)selectedCards[1].x][(int)selectedCards[1].y].color)
-									}
-
-								}*/
-
-								if (compareColor(self->cards[i][j].color, noCardColor))
+								if (compareColor(nextCard->color, prevCard->color))
 								{
-									self->cards[i][j].color = noCardColor;
+									prevCard->color = RAYWHITE;
+									nextCard->color = RAYWHITE;
+									isGameOver -= 2;
 								}
 								else
 								{
-									if (compareColor(self->cards[i][j].color, self->cards[i][j].initColor))
-									{
-										self->cards[i][j].color = self->selCard.color;
-										self->selCard.color = self->selCard.hiddenColor;
-									}
-									else
-									{
-
-
-										if (compareColor(self->cards[i][j].hiddenColor, self->selCard.hiddenColor))
-										{
-											//begone, cards.
-											self->cards[i][j].color = RAYWHITE;
-											self->selCard.color = RAYWHITE;
-										}
-										else
-										{
-											//cards turn back to normal.
-											self->cards[i][j].color = BLACK;
-											self->selCard.color = BLACK;
-
-											self->cards[i][j].color = self->cards[i][j].initColor;
-
-										}
-									}
+									prevCard->color = BLACK;
+									nextCard->color = BLACK;
 								}
+								nextCard = NULL;
+								prevCard = NULL;
 							}
+
+							if (!x)
+							{
+								prevCard = &self->cards[i][j];
+								x++;
+							}
+							else
+							{
+								nextCard = &self->cards[i][j];
+								x--;
+							}
+
+							if (!isGameOver)
+								self->gameState = GAMEOVER;
+
+							if (!compareColor(self->cards[i][j].color, RAYWHITE))
+								self->cards[i][j].color = self->cards[i][j].hiddenColor;
 						}
 					}
 				}
 			}
-			if (self->gameState == GAMEOVER) {
-				memory_State_GameOver(self);
-			}
-			if (self->gameState == QUIT) {
-				return;
-			}
 		}
 
-		//draw:
-
+		/* Drawing. */
 		BeginDrawing();
-
 		ClearBackground(RAYWHITE);
 
-		// erstelle ein array mit (in unserem Fall 16) rechtecken
 		for (int i = 0; i < 8; i++)
 		{
 			for (int j = 0; j < 2; j++)
 			{
-				Rectangle rec;
-				rec.x = self->cards[i][j].position.x + (recWidth + 10) * i;
-				rec.y = self->cards[i][j].position.y + (recHeight + 10) * j;
-				rec.width = recWidth;
-				rec.height = recHeight;
-
-				DrawRectangle(rec.x, rec.y, recWidth, recHeight, self->cards[i][j].color);
-
-
+				int x = self->cards[i][j].position.x + (recWidth + 10) * i;
+				int y = self->cards[i][j].position.y + (recHeight + 10) * j;
+		
+				if (self->cards[i][j].isTurned)
+				{
+					DrawRectangle(x, y, recWidth, recHeight, self->cards[i][j].hiddenColor);
+				}
+				else
+				{
+					DrawRectangle(x, y, recWidth, recHeight, self->cards[i][j].color);
+				}
 			}
 		}
 
 		EndDrawing();
-
 	}
-
-	return 0;
 }
 
 void memory_State_Pause(MemoryGame* self)
 {
 	Vector2 r = self->ratio;
-	float fontSize = 100.0;
-	float widthOffset = 50.0;
-
-	enum N { numButton = 3 };
-	Button buttons[numButton];
-	{
-		char* menuNames[numButton] = { "Continue", "Options", "Quit" };
-		float widthOffset2 = 100;
-		for (int i = 0; i < numButton; i++) {
-			memory_Button_init(&buttons[i],
-				menuNames[i],
-				widthOffset2 * r.x,
-				fontSize * r.y + (fontSize + 10) * r.y * i,
-				(float)MeasureText(menuNames[i], fontSize) * r.x,
-				fontSize * r.y,
-				fontSize * r.y,
-				r
-			);
-		}
-	}
 	bool pauseState = true;
+	float fontSize = 100;
+	float widthOffset2 = 100;
+	Button buttons[3] = { 0 };
+	char* menuNames[3] = { "Continue", "Options", "Quit" };
 
+	for (int i = 0; i < 3; i++)
+	{
+		memory_Button_init(&buttons[i],
+			menuNames[i],
+			widthOffset2 * r.x,
+			fontSize * r.y + (fontSize + 10) * r.y * i,
+			(float)MeasureText(menuNames[i], fontSize) * r.x,
+			fontSize * r.y,
+			fontSize * r.y,
+			r
+		);
+	}
 
 	while (pauseState && !WindowShouldClose())
 	{
 		//Update
+		for (int i = 0; i < 3; i++)
 		{
-			for (int i = 0; i < numButton; i++)
+			Vector2 mousepoint = GetMousePosition();
+			if (CheckCollisionPointRec(mousepoint, buttons[i].rec))
 			{
-				Vector2 mousepoint = GetMousePosition();
-				if (CheckCollisionPointRec(mousepoint, buttons[i].rec))
+				if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
 				{
-					if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-					{
-						buttons[i].isClicked = true;
-					}
-				}
-				if (buttons[i].isClicked == true)
-				{
-					buttons[i].isClicked = false;
-					switch (i)
-					{
-					case 0: pauseState = false; self->gameState = PLAY;  break;
-					case 1: memory_State_Config(self); break;
-					case 2: pauseState = false; self->gameState = QUIT; break;
-					}
+					buttons[i].isClicked = true;
 				}
 			}
+			if (buttons[i].isClicked)
+			{
+				buttons[i].isClicked = false;
+				switch (i)
+				{
+				case 0: pauseState = false; self->gameState = PLAY;  break;
+				case 1: memory_State_Config(self); break;
+				case 2: pauseState = false; self->gameState = QUIT; break;
+				}
+			}
+
 		}
 
 		//Draw
+		BeginDrawing();
+		ClearBackground(RAYWHITE);
+		DrawRectangle(0, 0, self->windowSize.x, self->windowSize.y, Fade(GRAY, 0.5f));
+		DrawText("Game Paused", self->windowSize.x / 2 * r.x, 400 * r.y, 75.0 * r.y, RED);
+
+		for (int i = 0; i < 3; i++)
 		{
-			BeginDrawing();
-			ClearBackground(RAYWHITE);
-
-			DrawRectangle(0, 0, self->windowSize.x, self->windowSize.y, Fade(GRAY, 0.5f));
-			DrawText("Game Paused", self->windowSize.x / 2 * r.x, 400 * r.y, 75.0 * r.y, RED);
-			for (int i = 0; i < numButton; i++)
-			{
-				Button_drawRec(&buttons[i]);
-			}
-
-			EndDrawing();
+			Button_drawRec(&buttons[i]);
 		}
+
+		EndDrawing();
 	}
 }
 
@@ -470,24 +429,21 @@ void memory_State_Config(MemoryGame* self)
 	Vector2 r = self->ratio;
 	float fontSize = 75.0;
 	float widthOffset = 50.0;
+	Button buttons[4];
+	char* menuNames[4] = { "SFX", "Difficulty", "Theme", "Go Back" };
 
-	enum N { numButton = 4 };
-	Button buttons[numButton];
+	for (int i = 0; i < 4; i++)
 	{
-		char* menuNames[numButton] = { "SFX", "Difficulty", "Theme", "Go Back" };
-		float widthOffset2 = 70;
-		for (int i = 0; i < numButton; i++)
-		{
-			memory_Button_init(&buttons[i],
-				menuNames[i],
-				widthOffset * r.x,
-				fontSize * r.y + (fontSize + 10) * r.y * i,
-				(float)MeasureText(menuNames[i], fontSize) * r.x,
-				fontSize * r.y,
-				fontSize * r.y,
-				r
-			);
-		}
+		memory_Button_init(&buttons[i],
+			menuNames[i],
+			widthOffset * r.x,
+			fontSize * r.y + (fontSize + 10) * r.y * i,
+			(float)MeasureText(menuNames[i], fontSize) * r.x,
+			fontSize * r.y,
+			fontSize * r.y,
+			r
+		);
+
 	}
 
 	typedef struct Circle
@@ -496,54 +452,45 @@ void memory_State_Config(MemoryGame* self)
 		float radius;
 		Color color;
 	} Circle;
-	enum { numCircle = 3 };
-	Circle sfxCircle[numCircle];
+
+	Circle sfxCircle[3];
+	Circle themeCircle[3];
+	Circle difficultyCircle[3];
+	Color sfxColors[2] = { RED, GREEN };
+	Color difficultyColors[3] = { GREEN, YELLOW, RED };
+	Color themeColors[3] = { BLUE, PINK, GOLD };
+
+	for (int i = 0; i < 3; i++)
 	{
-		Color sfxColors[2] = { RED, GREEN };
-		for (int i = 0; i < numCircle; i++)
-		{
-			sfxCircle[i].radius = (fontSize * r.y) / 2;
-			sfxCircle[i].position.x = sfxCircle[i].radius + widthOffset * r.x + (float)MeasureText(buttons[0].name, fontSize) * r.x;
-			sfxCircle[i].position.y = -sfxCircle[i].radius + fontSize * r.y + (fontSize + 10) * r.y * 0 + fontSize * r.y;
-			sfxCircle[i].position.x += i * sfxCircle[i].radius * 2 + 40 * r.x;
-			sfxCircle[i].color = sfxColors[i];
-		}
+		sfxCircle[i].radius = (fontSize * r.y) / 2;
+		sfxCircle[i].position.x = sfxCircle[i].radius + widthOffset * r.x + (float)MeasureText(buttons[0].name, fontSize) * r.x;
+		sfxCircle[i].position.y = -sfxCircle[i].radius + fontSize * r.y + (fontSize + 10) * r.y * 0 + fontSize * r.y;
+		sfxCircle[i].position.x += i * sfxCircle[i].radius * 2 + 40 * r.x;
+		sfxCircle[i].color = sfxColors[i % 2];
+
+		difficultyCircle[i].radius = (fontSize * r.y) / 2;
+		difficultyCircle[i].position.x = difficultyCircle[i].radius + widthOffset * r.x + (float)MeasureText(buttons[0].name, fontSize) * r.x;
+		difficultyCircle[i].position.y = -difficultyCircle[i].radius + fontSize * r.y + (fontSize + 10) * r.y * 0 + fontSize * r.y;
+		difficultyCircle[i].position.x += i * difficultyCircle[i].radius * 2 + 40 * r.x;
+		difficultyCircle[i].color = difficultyColors[i];
+
+		themeCircle[i].radius = (fontSize * r.y) / 2;
+		themeCircle[i].position.x = themeCircle[i].radius + widthOffset * r.x + (float)MeasureText(buttons[0].name, fontSize) * r.x;
+		themeCircle[i].position.y = -themeCircle[i].radius + fontSize * r.y + (fontSize + 10) * r.y * 0 + fontSize * r.y;
+		themeCircle[i].position.x += i * themeCircle[i].radius * 2 + 40 * r.x;
+		themeCircle[i].color = themeColors[i];
 	}
 
-	Circle difficultyCircle[numCircle];
-	{
-		Color difficultyColors[3] = { GREEN, YELLOW, RED };
-		for (int i = 0; i < numCircle; i++)
-		{
-			difficultyCircle[i].radius = (fontSize * r.y) / 2;
-			difficultyCircle[i].position.x = difficultyCircle[i].radius + widthOffset * r.x + (float)MeasureText(buttons[0].name, fontSize) * r.x;
-			difficultyCircle[i].position.y = -difficultyCircle[i].radius + fontSize * r.y + (fontSize + 10) * r.y * 0 + fontSize * r.y;
-			difficultyCircle[i].position.x += i * difficultyCircle[i].radius * 2 + 40 * r.x;
-			difficultyCircle[i].color = difficultyColors[i];
-		}
-	}
-
-	Circle themeCircle[numCircle];
-	{
-		Color themeColors[3] = { BLUE, PINK, GOLD };
-		for (int i = 0; i < numCircle; i++)
-		{
-			themeCircle[i].radius = (fontSize * r.y) / 2;
-			themeCircle[i].position.x = themeCircle[i].radius + widthOffset * r.x + (float)MeasureText(buttons[0].name, fontSize) * r.x;
-			themeCircle[i].position.y = -themeCircle[i].radius + fontSize * r.y + (fontSize + 10) * r.y * 0 + fontSize * r.y;
-			themeCircle[i].position.x += i * themeCircle[i].radius * 2 + 40 * r.x;
-			themeCircle[i].color = themeColors[i];
-		}
-	}
 
 	bool optionState = true;
+
 	while (optionState && !WindowShouldClose())
 	{
 		//Update
 		{
 			Vector2 mousepoint = GetMousePosition();
 
-			for (int i = 0; i < numButton; i++)
+			for (int i = 0; i < 4; i++)
 			{
 				Vector2 mousepoint = GetMousePosition();
 				if (CheckCollisionPointRec(mousepoint, buttons[i].rec))
@@ -561,11 +508,11 @@ void memory_State_Config(MemoryGame* self)
 					case 0: break;
 					case 1: break;
 					case 2: break;
-					case 3: return; break;
+					case 3: return;
 					}
 				}
 			}
-			for (int i = 0; i < numCircle; i++)
+			for (int i = 0; i < 3; i++)
 			{
 				if (CheckCollisionPointCircle(mousepoint, sfxCircle[i].position, sfxCircle[i].radius))
 				{
@@ -598,11 +545,11 @@ void memory_State_Config(MemoryGame* self)
 			DrawRectangle(0, 0, self->windowSize.x, self->windowSize.y, Fade(GRAY, 0.5f));
 			DrawText("Game Options", self->windowSize.x / 2 * r.x, 400 * r.y, 75.0 * r.y, RED);
 
-			for (int i = 0; i < numButton; i++)
+			for (int i = 0; i < 4; i++)
 			{
 				Button_draw(&buttons[i]);
 			}
-			for (int i = 0; i < numCircle; i++)
+			for (int i = 0; i < 3; i++)
 			{
 				DrawCircle(sfxCircle[i].position.x, sfxCircle[i].position.y, sfxCircle[i].radius, sfxCircle[i].color);
 				DrawCircle(difficultyCircle[i].position.x, difficultyCircle[i].position.y, difficultyCircle[i].radius, difficultyCircle[i].color);
@@ -661,12 +608,12 @@ void memory_State_GameOver(MemoryGame* self)
 		{
 			BeginDrawing();
 			ClearBackground(RAYWHITE);
-
 			DrawText("Game Over", self->windowSize.x / 2 * r.x, 400 * r.y, 75.0 * r.y, RED);
 
 			for (int i = 0; i < numButton; i++) {
 				Button_drawRec(&buttons[i]);
 			}
+
 			EndDrawing();
 		}
 	}
@@ -676,7 +623,6 @@ void init_memoryGame_main(App* self)
 {
 	MemoryGame memoryGame;
 	memoryGame.appPtr = self;
-
 	MemoryGame_init(&memoryGame);
 	memory_State_MainMenu(&memoryGame);
 }
